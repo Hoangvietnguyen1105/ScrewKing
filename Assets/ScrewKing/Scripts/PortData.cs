@@ -90,8 +90,9 @@ namespace ScrewKing
             PendingBoxes.AddRange(generated.queue);
             foreach(int color in generated.initial)Boxes.Add(new BoxState{Color=color});
             for(int i=0;i<5;i++)Seats.Add(new HoleState{Index=i});
-            // updateCfg -> checkLayerStatus(.1 + .4 reveal) -> doBoxAct(1s, .3s movement).
-            MoveBoxes(1.5,true);
+            // Source: updateCfg -> checkLayerStatus(.1 + .4 reveal) -> doBoxAct(1s, .3s movement) = 1.5s.
+            // Boxes now slide in right after the board reveal so the level feels ready sooner.
+            MoveBoxes(.5,true);
         }
         void Schedule(double delay,Action action)=>events.Add(new Scheduled{At=Clock+delay,Order=order++,Action=action});
         public void Tick(float delta)
