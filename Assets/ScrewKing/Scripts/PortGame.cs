@@ -41,7 +41,7 @@ namespace ScrewKing
             runtimeReady=true;platform=gameObject.AddComponent<TikTokPlatform>();
             platform.Configure(SdkSettings,()=>level);
             Application.targetFrameRate = 60;
-            #if !UNITY_WEBGL || UNITY_EDITOR
+            #if UNITY_STANDALONE && !UNITY_EDITOR
             Screen.SetResolution(540, 960, FullScreenMode.Windowed);
 #endif
             camera2d = Camera.main;
