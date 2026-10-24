@@ -13,7 +13,7 @@ namespace ScrewKing
         static readonly HashSet<string> Fill=new HashSet<string>{"Dimmer","InputBlocker","Transition"};
         static readonly HashSet<string> Top=new HashSet<string>{"CurrencyBadge","ScrewIcon","CurrencyCounter","CounterCaption","SettingsButton","CurrencyIcon","CurrencyBalance","TikTokShortcutEntry","TikTokRevisitEntry","Header"};
         static readonly HashSet<string> Bottom=new HashSet<string>{"Boosters","NormalHint","HammerHint","Footer","HomeTabBackground","HomeIcon","HomeCaption","ShopComingSoon","CardsComingSoon","ShopCaption","CardsCaption"};
-        [Tooltip("Design pixels kept clear at the top inside TikTok (MB_TIKTOK WebGL builds): status bar plus TikTok's menu capsule. Screen.safeArea does not report them in WebGL.")]
+        [Tooltip("Design pixels kept clear at the top in WebGL builds, matching TikTok: status bar plus TikTok's menu capsule. Screen.safeArea does not report them in WebGL.")]
         public float WebTopReserve=170;
         [Tooltip("Design pixels kept clear at the bottom in the TikTok player (home indicator).")]
         public float WebBottomReserve=40;
@@ -65,7 +65,8 @@ namespace ScrewKing
             float extraX=Mathf.Max(0,(canvas.x-DesignWidth)*.5f),extraY=Mathf.Max(0,(canvas.y-DesignHeight)*.5f);
             float pixels=canvas.y/Screen.height;
             float safeTop=(Screen.height-lastSafe.yMax)*pixels,safeBottom=lastSafe.yMin*pixels;
-#if MB_TIKTOK && UNITY_WEBGL && !UNITY_EDITOR
+// Browser previews reserve the same room as TikTok so their layout matches the TikTok build.
+#if UNITY_WEBGL && !UNITY_EDITOR
             safeTop=Mathf.Max(safeTop,WebTopReserve);safeBottom=Mathf.Max(safeBottom,WebBottomReserve);
 #endif
             // Bars only move outwards from their authored spot; pushing them inwards would cover the boxes and boosters.
