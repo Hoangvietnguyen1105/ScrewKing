@@ -17,7 +17,7 @@ namespace ScrewKing
             PlayerPrefs.SetInt(CurrencyKey, (int)System.Math.Min(int.MaxValue, (long)Mathf.Max(0,PlayerPrefs.GetInt(CurrencyKey,0)) + amount));
             PlayerPrefs.Save();PlatformFeatures?.PersistProgress();
         }
-        void GrantRoundCurrency(){if(roundReward.GrantBase())AddCurrency(LevelCurrencyReward);}
+        void GrantRoundCurrency(){if(roundReward.GrantBase()){AddCurrency(LevelCurrencyReward);Play("coin");}}
         void UiDoubleReward()
         {
             if(!UiDoubleRewardAvailable||!roundReward.BeginDouble(out int ticket))return;
@@ -30,7 +30,7 @@ namespace ScrewKing
         void CompleteDoubleReward(int ticket,bool completed,int version,PortModel current)
         {
             if(version!=generation||!ReferenceEquals(current,Model)||menu)return;
-            if(roundReward.CompleteDouble(ticket,completed))AddCurrency(LevelCurrencyReward);
+            if(roundReward.CompleteDouble(ticket,completed)){AddCurrency(LevelCurrencyReward);Play("coin");}
         }
         void OfferDoubleReward(){platform.Offer("level_reward_double");}
     }

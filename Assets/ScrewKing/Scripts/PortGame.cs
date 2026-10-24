@@ -46,6 +46,7 @@ namespace ScrewKing
 #endif
             camera2d = Camera.main;
             if (!camera2d) { var go = new GameObject("Portrait Camera"); camera2d = go.AddComponent<Camera>();go.tag="MainCamera"; }
+            if (!FindAnyObjectByType<AudioListener>()) camera2d.gameObject.AddComponent<AudioListener>();
             camera2d.orthographic = true; camera2d.orthographicSize = H / 200f;
             camera2d.transform.position = new Vector3(0, 0, -10);
             camera2d.clearFlags = CameraClearFlags.SolidColor; camera2d.backgroundColor = new Color(.73f,.36f,.13f);

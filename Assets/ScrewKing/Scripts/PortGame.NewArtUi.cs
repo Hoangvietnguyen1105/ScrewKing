@@ -55,6 +55,7 @@ namespace ScrewKing
         public string UiRewardStatus=>UiAdShowing?"Video in progress…":UiRewardAvailable?"Watch a video to continue.":"Video unavailable · try again later";
         public void UiInvoke(ScrewKingUiCommand command)
         {
+            Play("click");
             switch(command){
                 case ScrewKingUiCommand.TikTokShortcut:PlatformFeatures?.Open(TikTokMission.Shortcut);break;
                 case ScrewKingUiCommand.TikTokRevisit:PlatformFeatures?.Open(TikTokMission.Revisit);break;
@@ -64,15 +65,15 @@ namespace ScrewKing
                 case ScrewKingUiCommand.Privacy:PlatformFeatures?.OpenLegal(true);break;
                 case ScrewKingUiCommand.Terms:PlatformFeatures?.OpenLegal(false);break;
                 case ScrewKingUiCommand.DoubleReward:UiDoubleReward();break;
-                case ScrewKingUiCommand.Play:if(menu&&!settings&&(!PlatformFeatures||!PlatformFeatures.ModalOpen))StartLevel(level);break;
+                case ScrewKingUiCommand.Play:if(menu&&!settings&&(!PlatformFeatures||!PlatformFeatures.ModalOpen)){Play("enter");StartLevel(level);}break;
                 case ScrewKingUiCommand.Previous:if(menu&&!settings)level=level<=1?89:level-1;break;
                 case ScrewKingUiCommand.NextSelection:if(menu&&!settings)level=level>=89?1:level+1;break;
                 case ScrewKingUiCommand.Settings:settings=true;break;
                 case ScrewKingUiCommand.Resume:settings=false;break;
                 case ScrewKingUiCommand.Quit:if(menu)settings=false;else GoHome();break;
                 case ScrewKingUiCommand.CloseResult:if(!UiDoubleRewardPending&&!UiAdShowing)GoHome();break;
-                case ScrewKingUiCommand.NextLevel:if(!menu&&Model!=null&&Model.Won&&!UiDoubleRewardPending&&!UiAdShowing)UiNextLevel();break;
-                case ScrewKingUiCommand.Retry:if(!menu&&Model!=null&&Model.Lost)UiRetryLevel();break;
+                case ScrewKingUiCommand.NextLevel:if(!menu&&Model!=null&&Model.Won&&!UiDoubleRewardPending&&!UiAdShowing){Play("enter");UiNextLevel();}break;
+                case ScrewKingUiCommand.Retry:if(!menu&&Model!=null&&Model.Lost){Play("replay");UiRetryLevel();}break;
                 case ScrewKingUiCommand.WatchReward:if(!menu&&Model!=null&&Model.Prompt!=SourcePrompt.None&&UiRewardAvailable)UiWatchReward();break;
                 case ScrewKingUiCommand.CancelReward:if(!menu&&Model!=null&&!UiAdShowing)Model.RewardResult(false);break;
                 case ScrewKingUiCommand.AddSlot:case ScrewKingUiCommand.ClearSlots:case ScrewKingUiCommand.GlassHammer:

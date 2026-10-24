@@ -17,7 +17,7 @@ namespace ScrewKing.Editor
         public const string RootPath=Folder+"/ScrewKingUI.prefab";
         public const string PreviewPath="Assets/ScrewKing/Scenes/UIEditing.unity";
         const string Art="Art/NewArtUI/";
-        internal static Font Font=>Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        internal static Font Font=>Resources.Load<Font>("UI/Fonts/LilitaOne-Regular");
         static readonly Color Gold=new Color(.65f,.49f,.07f);
         [MenuItem("Screw King/UI/Create Missing Prefabs")]
         public static void CreateMissing()
@@ -81,7 +81,7 @@ namespace ScrewKing.Editor
         }
         internal static Text Label(string name,Transform parent,string value,float x,float y,float w,float h,int size,Color? color=null,Color? outline=null)
         {
-            var rect=Rect(name,parent,x,y,w,h);var text=rect.gameObject.AddComponent<Text>();text.font=Font;text.text=value;text.fontStyle=FontStyle.Bold;text.fontSize=size;
+            var rect=Rect(name,parent,x,y,w,h);var text=rect.gameObject.AddComponent<Text>();text.font=Font;text.text=value;text.fontStyle=FontStyle.Normal;text.fontSize=size;
             text.alignment=TextAnchor.MiddleCenter;text.color=color??Color.white;text.raycastTarget=false;text.horizontalOverflow=HorizontalWrapMode.Wrap;text.verticalOverflow=VerticalWrapMode.Overflow;
             if(outline.HasValue){var effect=rect.gameObject.AddComponent<Outline>();effect.effectColor=outline.Value;effect.effectDistance=new Vector2(2,-2);}
             return text;
@@ -122,12 +122,12 @@ namespace ScrewKing.Editor
             var play=Button("PlayButton",go.transform,"Level 1",new Rect(205,882,340,155),ScrewKingUiCommand.Play,size:58);view.LevelLabel=play.GetComponentInChildren<Text>();
             var previous=Icon("PreviousLevel",go.transform,"screw_setting/Layer 19 copy 3",new Rect(120,925,65,57),ScrewKingUiCommand.Previous);Label("Arrow",previous.transform,"<",0,0,65,57,40);previous.gameObject.SetActive(false);
             var next=Icon("NextLevel",go.transform,"screw_setting/Layer 19 copy 3",new Rect(565,925,65,57),ScrewKingUiCommand.NextSelection);Label("Arrow",next.transform,">",0,0,65,57,40);next.gameObject.SetActive(false);
-            var footer=Pic("Footer",go.transform,Art+"screw_home/Layer 15",0,1164,750,170);footer.preserveAspect=false;
-            Pic("HomeTabBackground",go.transform,Art+"screw_home/Layer 14 copy",231,1126,288,208);
-            Pic("HomeIcon",go.transform,Art+"screw_home/Layer 7 copy",300,1138,151,129);Label("HomeCaption",go.transform,"Home",265,1268,220,58,45,new Color(.54f,.28f,0));
+            var footer=Pic("Footer",go.transform,Art+"screw_home/Layer 15",0,1164,750,170);footer.preserveAspect=false;footer.gameObject.SetActive(false);
+            Pic("HomeTabBackground",go.transform,Art+"screw_home/Layer 14 copy",231,1126,288,208).gameObject.SetActive(false);
+            Pic("HomeIcon",go.transform,Art+"screw_home/Layer 7 copy",300,1138,151,129).gameObject.SetActive(false);Label("HomeCaption",go.transform,"Home",265,1268,220,58,45,new Color(.54f,.28f,0)).gameObject.SetActive(false);
             var shop=Pic("ShopComingSoon",go.transform,Art+"screw_home/Layer 9 copy",62,1200,124,116);shop.color=new Color(1,1,1,.55f);
-            var cards=Pic("CardsComingSoon",go.transform,Art+"screw_home/Layer 8 copy",558,1200,148,114);cards.color=new Color(1,1,1,.55f);
-            Label("ShopCaption",go.transform,"Soon",67,1300,114,27,17,new Color(.5f,.26f,0));Label("CardsCaption",go.transform,"Soon",575,1300,114,27,17,new Color(.5f,.26f,0));return go;
+            var cards=Pic("CardsComingSoon",go.transform,Art+"screw_home/Layer 8 copy",558,1200,148,114);cards.color=new Color(1,1,1,.55f);shop.gameObject.SetActive(false);cards.gameObject.SetActive(false);
+            Label("ShopCaption",go.transform,"Soon",67,1300,114,27,17,new Color(.5f,.26f,0)).gameObject.SetActive(false);Label("CardsCaption",go.transform,"Soon",575,1300,114,27,17,new Color(.5f,.26f,0)).gameObject.SetActive(false);return go;
         }
         static ScrewKingUiToggle Toggle(Transform parent,ScrewKingUiSetting setting,string icon,float y)
         {
@@ -206,7 +206,7 @@ namespace ScrewKing.Editor
             view.TitleLabel=RewardLabel("OfferTitle",content,"REVIVE!",225,303,300,80,52,Color.white,new Color(.58f,.31f,.01f));
             view.TitleLabel.resizeTextForBestFit=true;view.TitleLabel.resizeTextMinSize=28;view.TitleLabel.resizeTextMaxSize=52;
             Icon("CloseButton",content,"screw_setting/Layer 9 copy",new Rect(620,304,66,66),ScrewKingUiCommand.CancelReward);
-            Pic("RewardMedallion",content,ReskinArt.UI+"Layer 17 copy 2",271,419,208,208);
+            Pic("RewardMedallion",content,ReskinArt.UI+"Layer 17 copy 2",271,419,208,208).gameObject.SetActive(false);
             view.OfferIcon=Pic("ScrewIllustration",content,ReskinArt.Box(1),275,410,200,225);
             view.SlotIcon=Resources.Load<Sprite>(ReskinArt.UI+"Layer 35");view.ClearIcon=Resources.Load<Sprite>(ReskinArt.UI+"Layer 33");
             view.HammerIcon=Resources.Load<Sprite>(ReskinArt.UI+"Layer 34");view.BoxIcon=Resources.Load<Sprite>(ReskinArt.Box(1));
