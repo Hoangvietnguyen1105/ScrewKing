@@ -26,6 +26,7 @@ namespace ScrewKing
             actions=GetComponentsInChildren<ScrewKingUiAction>(true);
             raycaster=GetComponent<GraphicRaycaster>();
             if(OwnEventSystem && EventSystem.current && EventSystem.current!=OwnEventSystem)OwnEventSystem.gameObject.SetActive(false);
+            var layout=GetComponent<ScrewKingSafeLayout>();if(!layout)layout=gameObject.AddComponent<ScrewKingSafeLayout>();layout.Bind(this);
             Refresh();
         }
         void LateUpdate(){if(owner)Refresh();}

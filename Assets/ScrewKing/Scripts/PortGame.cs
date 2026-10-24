@@ -17,6 +17,7 @@ namespace ScrewKing
         bool sdkChangingLevel;
         BoardData guideBoard;
         Camera camera2d;
+        Transform woodBackground;Vector3 woodScale;
         CocosSourceRuntime source;
         bool resultPlayed;
         double wonAt, lostAt;
@@ -122,6 +123,8 @@ namespace ScrewKing
             if(!camera2d || !runtimeReady)return;
             float ratio=(float)Screen.width/Screen.height;
             camera2d.orthographicSize=Mathf.Max(H/200f,W/200f/ratio);
+            // Cover the whole visible area with the wood, keeping its aspect ratio.
+            if(woodBackground)woodBackground.localScale=woodScale*Mathf.Max(1,camera2d.orthographicSize*2*ratio/(W/100f),camera2d.orthographicSize*2/(H/100f));
             if(Input.GetKeyDown(KeyCode.Escape)) { if(settings)settings=false;else if(menu)Application.Quit();else GoHome(); }
             if(!menu && Model!=null)
             {
@@ -226,6 +229,7 @@ namespace ScrewKing
             background.sortingOrder = -1000;
             if (background.sprite)
                 background.transform.localScale = new Vector3(W / 100 / background.sprite.bounds.size.x, H / 100 / background.sprite.bounds.size.y, 1);
+            woodBackground=background.transform;woodScale=background.transform.localScale;
         }
         void LateUpdate()
         {
