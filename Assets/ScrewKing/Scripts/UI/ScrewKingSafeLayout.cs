@@ -21,7 +21,7 @@ namespace ScrewKing
         const int KindCover=0,KindFill=1,KindTop=2,KindBottom=3,KindDoorTop=4,KindDoorBottom=5;
         readonly List<Item> items=new List<Item>();
         RectTransform canvasRect;
-        Vector2 lastScreen;Rect lastSafe;
+        Vector2 lastScreen,lastCanvas;Rect lastSafe;
 
         public void Bind(ScrewKingUiController ui)
         {
@@ -52,7 +52,8 @@ namespace ScrewKing
         }
         void LateUpdate()
         {
-            if(canvasRect && (lastScreen.x!=Screen.width || lastScreen.y!=Screen.height || lastSafe!=Screen.safeArea))Apply();
+            // CanvasScaler resizes the canvas after the first frame, so watch its size as well as the screen.
+            if(canvasRect && (lastCanvas!=canvasRect.rect.size || lastScreen.x!=Screen.width || lastScreen.y!=Screen.height || lastSafe!=Screen.safeArea))Apply();
         }
         void Apply()
         {
@@ -60,7 +61,7 @@ namespace ScrewKing
             Canvas.ForceUpdateCanvases();
             var canvas=canvasRect.rect.size;
             if(canvas.x<=0 || canvas.y<=0)return;
-            lastScreen=new Vector2(Screen.width,Screen.height);lastSafe=Screen.safeArea;
+            lastScreen=new Vector2(Screen.width,Screen.height);lastSafe=Screen.safeArea;lastCanvas=canvas;
             float extraX=Mathf.Max(0,(canvas.x-DesignWidth)*.5f),extraY=Mathf.Max(0,(canvas.y-DesignHeight)*.5f);
             float pixels=canvas.y/Screen.height;
             float safeTop=(Screen.height-lastSafe.yMax)*pixels,safeBottom=lastSafe.yMin*pixels;
