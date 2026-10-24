@@ -1,0 +1,11 @@
+{
+  "passed": true,
+  "generation_runs": 178,
+  "levels": 89,
+  "physics_steps": 180,
+  "isolated_contexts": true,
+  "invalid_operation_rejected": true,
+  "utf8_boundary": true,
+  "cleanup": true,
+  "scope": "Node emulation of generated jslib; not an actual Unity WebGL or TikTok device test"
+}

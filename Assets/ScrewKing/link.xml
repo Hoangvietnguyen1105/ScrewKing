@@ -1,0 +1,9 @@
+<linker>
+  <assembly fullname="Assembly-CSharp" preserve="all" />
+  <assembly fullname="MoodBoost.Sdk.Core" preserve="all" />
+  <assembly fullname="MoodBoost.Sdk.Ads" preserve="all" />
+  <assembly fullname="MoodBoost.Sdk.Tracking" preserve="all" />
+  <assembly fullname="MoodBoost.Sdk.Haptics" preserve="all" />
+  <assembly fullname="MoodBoost.Sdk.Unity" preserve="all" />
+  <assembly fullname="MoodBoost.Sdk.TikTok" preserve="all" ignoreIfMissing="1" />
+</linker>

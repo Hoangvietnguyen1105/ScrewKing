@@ -1,0 +1,118 @@
+// Rendering-independent adapter. Algorithms come from the unmodified APK modules.
+var window=this;
+function V(x,y){this.x=x||0;this.y=y||0;}
+V.prototype.clone=function(){return new V(this.x,this.y);};
+V.prototype.equals=function(v){return this.x===v.x&&this.y===v.y;};
+V.prototype.sub=function(v){return new V(this.x-v.x,this.y-v.y);};
+V.prototype.add=function(v){return new V(this.x+v.x,this.y+v.y);};
+V.prototype.mul=function(v){return new V(this.x*v,this.y*v);};
+V.prototype.div=function(v){return new V(this.x/v,this.y/v);};
+V.prototype.dot=function(v){return this.x*v.x+this.y*v.y;};
+V.prototype.cross=function(v){return this.x*v.y-this.y*v.x;};
+V.prototype.mag=function(){return Math.sqrt(this.dot(this));};
+V.prototype.magSqr=function(){return this.dot(this);};
+V.prototype.normalize=function(){var m=this.mag();return m?this.mul(1/m):new V();};
+var cc={_RF:{push:function(){},pop:function(){}},v2:function(x,y){return new V(x,y);},size:function(w,h){return {width:w,height:h};},
+ color:function(r,g,b){return {r:r,g:g,b:b};},Node:function(){},Prefab:function(){},Sprite:function(){},
+ _decorator:{ccclass:function(c){return c;},property:function(){return function(){};}}};
+var SourceCache={};
+var SourceConfig={lockBoxNum:2,holeGameNum:5,holeGameLockNum:11,gameBoardScale:1,showBoardLayerNum:5,grayBoardLayerNum:2,isOpenWillFullView:0};
+function SourceRequire(name){
+ name=name.split('/').pop();
+ if(SourceCache[name])return SourceCache[name];
+ if(name==='GameServerConf')return {default:{I:SourceConfig}};
+ if(!SourceModules[name])return {default:function(){}};
+ var m={exports:{}};SourceCache[name]=m.exports;SourceModules[name][0](SourceRequire,m,m.exports);return m.exports;
+}
+var app={arrayUtil:null,cons:null};
+var SourceLevel,SourceGenerated,SourceRandomDraws;
+function SourceGenerate(raw,seed){
+ var input=JSON.parse(raw);input.list=input.layers.map(function(x){return x.boards;});
+ input.list.forEach(function(layer){layer.forEach(function(board){board.nail.forEach(function(n){if(n.type===0)delete n.type;});});});
+ var oldRandom=Math.random,state=seed>>>0;SourceRandomDraws=0;
+ Math.random=function(){state^=state<<13;state^=state>>>17;state^=state<<5;SourceRandomDraws++;return (state>>>0)/4294967296;};
+ try{
+  app.arrayUtil=SourceRequire('ArrayUtils').default;
+  app.cons=new (SourceRequire('MainConst').default)();
+  var game=new (SourceRequire('GameUI').default)();
+  var initial=[];
+  game.curLvCfg=input;game.gameType=1;game.curLevel=input.id-1;
+  game.addBox=function(c){initial.push(c);};
+  game.updateBoxType=game.updateHole=game.updateProg=game.addBoardList=game.scheduleOnce=function(){};
+  var problem=null;game.updateCfg().catch(function(e){problem=String(e);});
+  SourceLevel=input;
+  SourceGenerated={level:input,initial:initial,queue:game.boxTypes.slice(),randomDraws:SourceRandomDraws};
+  return JSON.stringify(SourceGenerated);
+ }finally{Math.random=oldRandom;}
+}
+
+var SourceBox2D,SourcePartition,SourceWorld,SourceBoards={},SourceTime=0,SourcePendingRemove=[];
+function SourcePhysicsReset(){
+ SourceBox2D=__engineRequire(313);SourcePartition=__engineRequire(134);
+ SourceWorld=new SourceBox2D.b2World(new SourceBox2D.b2Vec2(0,-10));SourceWorld.SetAllowSleeping(true);
+ SourceBoards={};SourceTime=0;SourcePendingRemove=[];
+ var B=SourceBox2D,floorDef=new B.b2BodyDef();floorDef.position=new B.b2Vec2(0,-1067/32);var floor=SourceWorld.CreateBody(floorDef);floor.SetUserData('floor');
+ var floorShape=new B.b2PolygonShape();floorShape.SetAsBox(2500/32,100/32);var fd=new B.b2FixtureDef();fd.shape=floorShape;fd.isSensor=true;fd.filter.categoryBits=1<<12;fd.filter.maskBits=2046;floor.CreateFixture(fd);
+ var listener=new B.b2ContactListener();listener.BeginContact=function(contact){var a=contact.GetFixtureA().GetBody().GetUserData(),b=contact.GetFixtureB().GetBody().GetUserData();if(a==='floor'&&typeof b==='number')SourcePendingRemove.push(b);if(b==='floor'&&typeof a==='number')SourcePendingRemove.push(a);};SourceWorld.SetContactListener(listener);
+ return 'ok';
+}
+function SourceBoardAdd(key,layer,index,centerY){
+ var B=SourceBox2D,data=SourceLevel.layers[layer].boards[index];
+ var shape=SourceRequire('MainConst').SHAPE_MAP[data.id];
+ var points=shape.points.map(function(p){return new V(Math.round(p.x*.97*data.w/shape.size.width),Math.round(p.y*.97)*data.h/shape.size.height);});
+ var def=new B.b2BodyDef();def.type=2;def.position=new B.b2Vec2(data.x/32,(data.y+centerY)/32);def.angle=(data.angle||0)*Math.PI/180;
+ // Exact values from ComBoard prefab: gravityScale=12, linearDamping=1.2.
+ def.gravityScale=12;def.linearDamping=1.2;def.angularDamping=0;def.allowSleep=true;def.active=false;
+ var body=SourceWorld.CreateBody(def);body.SetUserData(key);
+ var partition=SourcePartition.ConvexPartition(points.map(function(p){return p.clone();}));
+ for(var pi=0;pi<partition.length;pi++){
+  var polygon=partition[pi],verts=[],first=null;
+  function fixture(v){var shape=new B.b2PolygonShape();shape.Set(v,v.length);var fd=new B.b2FixtureDef();fd.shape=shape;fd.density=1;fd.friction=.2;fd.restitution=0;fd.filter.categoryBits=1<<((layer%10)+1);fd.filter.maskBits=fd.filter.categoryBits|(1<<12);body.CreateFixture(fd);}
+  for(var vi=0;vi<polygon.length;vi++){
+   var p=polygon[vi],v=new B.b2Vec2(p.x/32,p.y/32);verts.push(v);if(!first)first=v;
+   if(verts.length===8){fixture(verts);verts=vi<polygon.length-1?[first,v]:[];}
+  }
+  if(verts.length>=3)fixture(verts);
+ }
+ var rec={key:key,layer:layer,body:body,points:points,joints:{},anchors:{},age:0,shown:false,staticAt:SourceTime+.3};
+ for(var ni=0;ni<data.nail.length;ni++){
+  var n=data.nail[ni],local=new B.b2Vec2(n.x/32,n.y/32),world=body.GetWorldPoint(local,new B.b2Vec2());
+  var pinDef=new B.b2BodyDef();pinDef.type=0;pinDef.position=world;var pin=SourceWorld.CreateBody(pinDef);
+  var jointDef=new B.b2RevoluteJointDef();jointDef.bodyA=pin;jointDef.bodyB=body;jointDef.localAnchorA.SetZero();jointDef.localAnchorB.Copy(local);jointDef.referenceAngle=0;jointDef.collideConnected=false;
+  rec.joints[ni]=SourceWorld.CreateJoint(jointDef);rec.anchors[ni]=pin;
+ }
+ SourceBoards[key]=rec;return 'ok';
+}
+function SourceBoardVisible(key,value){var r=SourceBoards[key];r.shown=value;r.body.SetActive(value);return 'ok';}
+function SourceBoardDynamic(key){var r=SourceBoards[key];r.body.SetType(2);r.body.SetAwake(true);return 'ok';}
+function SourceRelease(key,index){var r=SourceBoards[key];if(r.joints[index]){SourceWorld.DestroyJoint(r.joints[index]);delete r.joints[index];SourceWorld.DestroyBody(r.anchors[index]);delete r.anchors[index];}return 'ok';}
+function SourceBoardRemove(key){var r=SourceBoards[key];if(!r)return 'ok';for(var n in r.anchors){if(r.joints[n])SourceWorld.DestroyJoint(r.joints[n]);SourceWorld.DestroyBody(r.anchors[n]);}SourceWorld.DestroyBody(r.body);delete SourceBoards[key];return 'ok';}
+function SourcePhysicsStep(dt){
+ SourceTime+=dt;
+ var removed=SourcePendingRemove.slice();SourcePendingRemove=[];for(var ri=0;ri<removed.length;ri++)SourceBoardRemove(removed[ri]);
+ for(var k in SourceBoards){var r=SourceBoards[k];if(r.staticAt!==null&&SourceTime>=r.staticAt){r.body.SetType(0);r.staticAt=null;}}
+ SourceWorld.Step(1/60,10,10);
+ var result=[];
+ for(var k in SourceBoards){var r=SourceBoards[k],p=r.body.GetPosition();result.push({key:r.key,x:p.x*32,y:p.y*32,angle:r.body.GetAngle()*180/Math.PI});}
+ return JSON.stringify({boards:result});
+}
+function SourceBoardPoints(key){var r=SourceBoards[key];return r.points.map(function(p){var w=r.body.GetWorldPoint(new SourceBox2D.b2Vec2(p.x/32,p.y/32),new SourceBox2D.b2Vec2());return new V(w.x*32,w.y*32);});}
+function SourcePointInPolygon(p,poly){var inside=false;for(var i=0,j=poly.length-1;i<poly.length;j=i++){var a=poly[i],b=poly[j];if(((a.y>p.y)!=(b.y>p.y))&&(p.x<(b.x-a.x)*(p.y-a.y)/(b.y-a.y)+a.x))inside=!inside;}return inside;}
+function SourceCovers(key,x,y,radius){
+ var r=SourceBoards[key];if(!r||!r.shown)return false;
+ var poly=SourceBoardPoints(key),p=new V(x,y),intersection=__engineRequire(87);
+ return radius?intersection.polygonCircle(poly,{position:p,radius:radius}):intersection.pointInPolygon(p,poly);
+}
+
+function SourcePick(values){return app.arrayUtil.randByList(values);}
+function SourceRoute(raw){
+ var q=JSON.parse(raw),proto=SourceRequire('GameUI').default.prototype,route='reject';
+ var game={screwActNum:0,
+  holeList:q.holes.map(function(free,i){return {getComponent:function(){return {isFree:function(){return free;},marker:'hole:'+i};}};}),
+  boxList:q.boxes.map(function(b,i){return {getComponent:function(){return {isCen:function(){return b.center;},getBoxType:function(){return b.color;},getScrewNum:function(){return b.count;},marker:'box:'+i};}};}),
+  getFreeHole:proto.getFreeHole,getFreeBoxSeat:proto.getFreeBoxSeat,
+  doScrew:function(n,target,cb){route=target.marker;}
+ };
+ var accepted=proto.unscrew.call(game,{getComponent:function(){return {getScrewType:function(){return q.color;}};}});
+ return JSON.stringify({accepted:!!accepted,route:route});
+}

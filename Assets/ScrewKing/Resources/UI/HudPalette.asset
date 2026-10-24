@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f37f5ed7aace4b34ac0c5abbf499f6b5, type: 3}
+  m_Name: HudPalette
+  m_EditorClassIdentifier: Assembly-CSharp::ScrewKing.ScrewKingHudPalette
+  Screws:
+  - {fileID: 0}
+  - {fileID: 21300000, guid: bd2cc45e8a87c461cbe25d78bf9d8e12, type: 3}
+  - {fileID: 21300000, guid: e18d0448947a642e6873ac16a06e4a2a, type: 3}
+  - {fileID: 21300000, guid: bf3c5ecdeb65a4a229ca236968b2e1e3, type: 3}
+  - {fileID: 21300000, guid: 3ce42b3285f204209bd1955e56fec070, type: 3}
+  - {fileID: 21300000, guid: 067c2bc108de54c5faef3116a135597d, type: 3}
+  - {fileID: 21300000, guid: 56c68058b4846409bb0dde147dc88797, type: 3}
+  - {fileID: 21300000, guid: 7d1053080d85a4fc7997bd1c83106d41, type: 3}
+  - {fileID: 21300000, guid: 8a92df71f80864d20adb4fbdda01dd65, type: 3}
+  - {fileID: 21300000, guid: 38028329bc4bc483d918080068d4149e, type: 3}
+  - {fileID: 21300000, guid: 6805704ea86ec4091a9c0897fee65b9d, type: 3}
+  - {fileID: 21300000, guid: 5ceb81564799d4a1eafc8ce5b3078d2f, type: 3}
+  Boxes:
+  - {fileID: 0}
+  - {fileID: 21300000, guid: 2651662035943426498095d26e5dbf11, type: 3}
+  - {fileID: 21300000, guid: b1330b720a6be435b8974e2e40f25145, type: 3}
+  - {fileID: 21300000, guid: 2b80c1b23be4b4a3b8354db2967978e8, type: 3}
+  - {fileID: 21300000, guid: 26fd695402c8146b6808c88d40f7eb70, type: 3}
+  - {fileID: 21300000, guid: 292527307784d48048ece446689c246d, type: 3}
+  - {fileID: 21300000, guid: 63c3af4756afb48dab078e2fe4d2e9bc, type: 3}
+  - {fileID: 21300000, guid: ea255d60ab0e94c1f9ed637cc5267ebd, type: 3}
+  - {fileID: 21300000, guid: 9a2bfe996d9c24a50a2a7cecd516af0d, type: 3}
+  - {fileID: 21300000, guid: 25b33006c9c4d479cae9e5e5b1b97cee, type: 3}
+  - {fileID: 21300000, guid: 80788ee4f1894475d8971822833de0bf, type: 3}
+  - {fileID: 21300000, guid: e9c2ef33207704d0f89761eb635f322d, type: 3}
+  Lids:
+  - {fileID: 0}
+  - {fileID: 21300000, guid: 4c15b918a2801432fb07738f58d16a04, type: 3}
+  - {fileID: 21300000, guid: 8c666cabe92ac498fb422ad38b08a848, type: 3}
+  - {fileID: 21300000, guid: 87d06506b6c6e4572b3a9c16a8e6ea7e, type: 3}
+  - {fileID: 21300000, guid: 8cada96c292b24719941a98a9d534024, type: 3}
+  - {fileID: 21300000, guid: 6b73f69f5904c4f66abb537a3ee553bf, type: 3}
+  - {fileID: 21300000, guid: ec3d3f39f0b5247718e0f3ee17b14a91, type: 3}
+  - {fileID: 21300000, guid: a9bccb71863b7430a887c9deb640ae09, type: 3}
+  - {fileID: 21300000, guid: 7fa3e919700034b3c95c2fb3d911cb9e, type: 3}
+  - {fileID: 21300000, guid: c17666d74b6ea4c77b78565738ea2607, type: 3}
+  - {fileID: 21300000, guid: 99b3afcfd20f74508b882f8a425593f9, type: 3}
+  - {fileID: 21300000, guid: f74c3f1eb6bc84a7788259c4896dfff6, type: 3}
