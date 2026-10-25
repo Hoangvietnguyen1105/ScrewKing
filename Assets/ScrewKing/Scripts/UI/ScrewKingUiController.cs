@@ -8,6 +8,8 @@ namespace ScrewKing
     public sealed class ScrewKingUiController : MonoBehaviour
     {
         public ScrewKingUiView Home, Settings, Win, Lose, Reward, Loading;
+        [Tooltip("Booster offer: video first, currency second. Booster prompts fall back to Reward when unassigned.")]
+        public ScrewKingUiView BuyBooster;
         public ScrewKingGameplayHud Gameplay;
         public TikTokMissionView Shortcut,Revisit;
         public GameObject ShortcutEntry,RevisitEntry;
@@ -37,11 +39,12 @@ namespace ScrewKing
             bool reward=!home && owner.Model!=null && owner.Model.Prompt!=SourcePrompt.None;
             var features=owner.PlatformFeatures;
             bool platformModal=features&&features.ModalOpen;
+            bool booster=reward && BuyBooster && owner.UiBoosterPrompt;
             float age=Time.unscaledTime-openedAt;
             LoadingVisible=home && Loading && age<Loading.DoorHold+Loading.DoorDuration;
             if(Gameplay)Gameplay.gameObject.SetActive(!home);
             Home.Show(home);Settings.Show(settings&&!reward&&!won&&!lost&&!platformModal);
-            Win.Show(won&&!reward&&!platformModal);Lose.Show(lost&&!reward&&!platformModal);Reward.Show(reward&&!platformModal);Loading.Show(LoadingVisible);
+            Win.Show(won&&!reward&&!platformModal);Lose.Show(lost&&!reward&&!platformModal);Reward.Show(reward&&!booster&&!platformModal);if(BuyBooster)BuyBooster.Show(booster&&!platformModal);Loading.Show(LoadingVisible);
             if(ShortcutEntry)ShortcutEntry.SetActive(features&&features.Visible&&(!features.IsLive||features.Supported(TikTokMission.Shortcut)));
             if(RevisitEntry)RevisitEntry.SetActive(features&&features.Visible&&(!features.IsLive||features.Supported(TikTokMission.Revisit)));
             if(Shortcut){bool visible=platformModal&&features.OpenMission==TikTokMission.Shortcut;Shortcut.Show(visible);if(visible)Shortcut.Refresh(features);}
@@ -57,22 +60,29 @@ namespace ScrewKing
             if(won){if(Win.LevelLabel)Win.LevelLabel.text="Level "+owner.UiLevel;Win.Animate();}
             if(lost){if(Lose.LevelLabel)Lose.LevelLabel.text="Level "+owner.UiLevel;Lose.Animate();}
             if(reward){
+                var offer=booster?BuyBooster:Reward;
                 var prompt=owner.Model.Prompt;
                 string title="UNLOCK BOX",description="Open another box\nand keep playing.";
-                Sprite icon=Reward.BoxIcon;
+                Sprite icon=offer.BoxIcon;
                 switch(prompt){
                     case SourcePrompt.Revive:title="REVIVE!";break;
-                    case SourcePrompt.Slot:title="ADD SLOT";description="Make room with\none extra slot.";icon=Reward.SlotIcon;break;
-                    case SourcePrompt.Clear:case SourcePrompt.ClearRescue:title="CLEAR SLOTS";description="Clear your slots\nand keep playing.";icon=Reward.ClearIcon;break;
-                    case SourcePrompt.Hammer:title="GLASS HAMMER";description="Break a board\nto free the screws.";icon=Reward.HammerIcon;break;
+                    case SourcePrompt.Slot:title="ADD SLOT";description="Make room with\none extra slot.";icon=offer.SlotIcon;break;
+                    case SourcePrompt.Clear:case SourcePrompt.ClearRescue:title="CLEAR SLOTS";description="Clear your slots\nand keep playing.";icon=offer.ClearIcon;break;
+                    case SourcePrompt.Hammer:title="GLASS HAMMER";description="Break a board\nto free the screws.";icon=offer.HammerIcon;break;
                 }
-                if(Reward.TitleLabel)Reward.TitleLabel.text=title;
-                if(Reward.DescriptionLabel)Reward.DescriptionLabel.text=description;
-                if(Reward.OfferIcon&&icon)Reward.OfferIcon.sprite=icon;
-                if(Reward.CancelButtonLabel)Reward.CancelButtonLabel.text=prompt==SourcePrompt.Revive?"Give up":"Not now";
-                Reward.Animate();
-                if(Reward.StatusLabel)Reward.StatusLabel.text=owner.UiRewardStatus;
-                if(Reward.RewardButtonLabel)Reward.RewardButtonLabel.text=owner.UiRewardButtonText;
+                if(offer.TitleLabel)offer.TitleLabel.text=title;
+                if(offer.DescriptionLabel)offer.DescriptionLabel.text=description;
+                if(offer.OfferIcon&&icon)offer.OfferIcon.sprite=icon;
+                if(offer.CancelButtonLabel)offer.CancelButtonLabel.text=prompt==SourcePrompt.Revive?"Give up":"Not now";
+                offer.Animate();
+                if(booster){
+                    if(BuyBooster.CounterLabel)BuyBooster.CounterLabel.text=owner.UiCurrency.ToString();
+                    if(BuyBooster.PriceLabel)BuyBooster.PriceLabel.text=PortGame.BoosterPrice.ToString();
+                    if(BuyBooster.StatusLabel)BuyBooster.StatusLabel.text=owner.UiAdShowing?"Video in progress…":owner.UiCurrency<PortGame.BoosterPrice?"Need "+(PortGame.BoosterPrice-owner.UiCurrency)+" more screws":"";
+                }else{
+                    if(Reward.StatusLabel)Reward.StatusLabel.text=owner.UiRewardStatus;
+                    if(Reward.RewardButtonLabel)Reward.RewardButtonLabel.text=owner.UiRewardButtonText;
+                }
             }
             if(settings && Settings.Switches!=null)foreach(var toggle in Settings.Switches)if(toggle)toggle.SetValue(owner.UiSetting(toggle.Setting));
             if(LoadingVisible)Loading.AnimateDoors(age);
@@ -87,6 +97,7 @@ namespace ScrewKing
                 if(action.Command==ScrewKingUiCommand.Play)allowed &= !platformModal;
                 if(action.Command==ScrewKingUiCommand.WatchReward)allowed &= owner.UiRewardAvailable;
                 if(action.Command==ScrewKingUiCommand.CancelReward)allowed &= !owner.UiAdShowing;
+                if(action.Command==ScrewKingUiCommand.BuyBooster)allowed &= owner.UiCanBuyBooster;
                 if(action.Command==ScrewKingUiCommand.NextLevel)allowed &= !owner.UiChangingLevel&&!owner.UiDoubleRewardPending&&!owner.UiAdShowing;
                 if(action.Command==ScrewKingUiCommand.AddSlot||action.Command==ScrewKingUiCommand.ClearSlots||action.Command==ScrewKingUiCommand.GlassHammer)allowed &= owner.UiHudInteractable;
                 button.interactable=allowed;
@@ -104,7 +115,8 @@ namespace ScrewKing
         [ContextMenu("Preview/Win")] public void PreviewWin()=>Preview(Win);
         [ContextMenu("Preview/Lose")] public void PreviewLose()=>Preview(Lose);
         [ContextMenu("Preview/Reward")] public void PreviewReward()=>Preview(Reward);
+        [ContextMenu("Preview/Buy Booster")] public void PreviewBuyBooster()=>Preview(BuyBooster);
         [ContextMenu("Preview/Loading")] public void PreviewLoading()=>Preview(Loading);
-        void Preview(ScrewKingUiView selected){if(Shortcut)Shortcut.gameObject.SetActive(false);if(Revisit)Revisit.gameObject.SetActive(false);if(Gameplay)Gameplay.gameObject.SetActive(selected!=Home&&selected!=Loading);foreach(var view in new[]{Home,Settings,Win,Lose,Reward,Loading})if(view)view.gameObject.SetActive(view==selected);}
+        void Preview(ScrewKingUiView selected){if(Shortcut)Shortcut.gameObject.SetActive(false);if(Revisit)Revisit.gameObject.SetActive(false);if(Gameplay)Gameplay.gameObject.SetActive(selected!=Home&&selected!=Loading);foreach(var view in new[]{Home,Settings,Win,Lose,Reward,BuyBooster,Loading})if(view)view.gameObject.SetActive(view==selected);}
     }
 }

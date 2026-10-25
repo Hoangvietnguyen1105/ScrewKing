@@ -264,8 +264,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 225, y: -303}
-  m_SizeDelta: {x: 300, y: 80}
+  m_AnchoredPosition: {x: 225, y: -313}
+  m_SizeDelta: {x: 300, y: 60}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &3368631923751561863
 CanvasRenderer:
@@ -306,7 +306,7 @@ MonoBehaviour:
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
-    m_VerticalOverflow: 1
+    m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: REVIVE!
 --- !u!114 &694345233038137454
@@ -623,6 +623,7 @@ MonoBehaviour:
   RewardButtonLabel: {fileID: 1456428847629748421}
   DescriptionLabel: {fileID: 8334522990368853732}
   CancelButtonLabel: {fileID: 8367037630788691633}
+  PriceLabel: {fileID: 0}
   OfferIcon: {fileID: 2554369255675819817}
   SlotIcon: {fileID: 21300000, guid: 96bde4ae6a0874f89a812cea4248cdad, type: 3}
   ClearIcon: {fileID: 21300000, guid: 21b99ed4761a64982a743ec38e18e432, type: 3}

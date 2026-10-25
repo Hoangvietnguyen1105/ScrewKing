@@ -58,3 +58,7 @@ sysinfo.txt
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# TikTok build outputs
+/tt-minigame/
+/screwking/

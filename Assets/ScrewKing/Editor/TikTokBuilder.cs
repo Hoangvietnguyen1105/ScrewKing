@@ -87,9 +87,9 @@ namespace ScrewKing.Editor
             Preflight();
             var config=Resources.Load<TikTokSettings>("TikTok/Settings");
             if(!config||string.IsNullOrWhiteSpace(config.AppId))throw new InvalidOperationException("App ID required: create Resources/TikTok/Settings.asset using Screw King/TikTok Settings. Never include a client secret.");
-            if(!config.EnableGrowthFeatures)throw new InvalidOperationException("Enable TikTok shortcut and revisit capabilities before release.");
-            if(!TikTokSessionGateway.IsHttps(config.LoginEndpoint)||!TikTokSessionGateway.IsHttps(config.TermsUrl)||!TikTokSessionGateway.IsHttps(config.PrivacyUrl))throw new InvalidOperationException("Configure HTTPS Login Endpoint, Terms URL and Privacy URL in TikTok/Settings before release.");
-            if(!Application.unityVersion.StartsWith("2021.")&&!Application.unityVersion.StartsWith("2022."))throw new InvalidOperationException("TikTok's published Unity release toolchain requires Unity 2021/2022. This Unity version is verified for local preview only; validate the native runtime with a supported toolchain.");
+            // Shortcut/revisit rewards are optional, like the base: they need the login backend only when enabled.
+            if(config.EnableGrowthFeatures&&!TikTokSessionGateway.IsHttps(config.LoginEndpoint))throw new InvalidOperationException("Growth features need an HTTPS Login Endpoint in TikTok/Settings; configure it or disable EnableGrowthFeatures.");
+            if(!TikTokSessionGateway.IsHttps(config.TermsUrl)||!TikTokSessionGateway.IsHttps(config.PrivacyUrl))throw new InvalidOperationException("Configure HTTPS Terms URL and Privacy URL in TikTok/Settings before release.");
             if(!EnsureSdkSettings().Mediations.Any(m=>m.adUnits.rewarded!=null&&m.adUnits.rewarded.Any(x=>!string.IsNullOrWhiteSpace(x.Current))))throw new InvalidOperationException("Configure a rewarded ad unit before release.");
             if(EditorUserBuildSettings.activeBuildTarget!=BuildTarget.WebGL)throw new InvalidOperationException("Select WebGL before TikTok packaging.");
             PlayerSettings.SetScriptingDefineSymbols(NamedBuildTarget.WebGL,"MB_TIKTOK");

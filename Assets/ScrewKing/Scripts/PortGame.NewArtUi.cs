@@ -75,6 +75,7 @@ namespace ScrewKing
                 case ScrewKingUiCommand.NextLevel:if(!menu&&Model!=null&&Model.Won&&!UiDoubleRewardPending&&!UiAdShowing){Play("enter");UiNextLevel();}break;
                 case ScrewKingUiCommand.Retry:if(!menu&&Model!=null&&Model.Lost){Play("replay");UiRetryLevel();}break;
                 case ScrewKingUiCommand.WatchReward:if(!menu&&Model!=null&&Model.Prompt!=SourcePrompt.None&&UiRewardAvailable)UiWatchReward();break;
+                case ScrewKingUiCommand.BuyBooster:UiBuyBooster();break;
                 case ScrewKingUiCommand.CancelReward:if(!menu&&Model!=null&&!UiAdShowing)Model.RewardResult(false);break;
                 case ScrewKingUiCommand.AddSlot:case ScrewKingUiCommand.ClearSlots:case ScrewKingUiCommand.GlassHammer:
                     if(UiHudInteractable){var prompt=command==ScrewKingUiCommand.AddSlot?SourcePrompt.Slot:command==ScrewKingUiCommand.ClearSlots?SourcePrompt.Clear:SourcePrompt.Hammer;if(!Model.Request(prompt))Say("This action is unavailable right now.");}break;

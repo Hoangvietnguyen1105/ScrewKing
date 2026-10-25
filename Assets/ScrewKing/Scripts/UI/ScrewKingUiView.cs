@@ -7,7 +7,7 @@ namespace ScrewKing
     public sealed class ScrewKingUiView : MonoBehaviour
     {
         public Text LevelLabel, CounterLabel, TitleLabel, StatusLabel, RewardButtonLabel;
-        public Text DescriptionLabel,CancelButtonLabel;
+        public Text DescriptionLabel,CancelButtonLabel,PriceLabel;
         public Image OfferIcon;
         public Sprite SlotIcon,ClearIcon,HammerIcon,BoxIcon;
         public ScrewKingUiToggle[] Switches;

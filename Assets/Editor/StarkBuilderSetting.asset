@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: ttsdk_tools.dll::TTSDK.Tool.StarkBuilderSettings
   tag: 0
   wasmResourceUrl: 
-  OutputDir: 
+  OutputDir: /Users/hoangvietnguyen1105/ScrewKing/ScrewKingTikTok/tt-minigame
   useByteAudioAPI: 0
   wasmMemorySize: 128
   isWebGL2: 0
@@ -52,12 +52,12 @@ MonoBehaviour:
   NativeWhiteListRegex:
   - com.bytedance.starksdk
   - _Backup~
-  _appId: 
+  _appId: mgz13b6aqp88x420
   version: 
   autoVersion: 0
-  _webglPackagePath: 
+  _webglPackagePath: /Users/hoangvietnguyen1105/ScrewKing/ScrewKingTikTok/tt-minigame/tt-minigame
   _orientation: 0
-  _iOSPerformancePlus: 0
+  _iOSPerformancePlus: 1
   _menuButtonStyle: 0
   _publishType: 0
   publishDesc: 

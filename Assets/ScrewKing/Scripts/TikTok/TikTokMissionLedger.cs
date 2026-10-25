@@ -58,6 +58,11 @@ namespace ScrewKing
             if(amount<=0||!Eligible(account,mission))return false;
             return Transaction(()=>{Find(account,mission,true).claimedDay=today();Data.growthCoins=(int)Math.Min(int.MaxValue,(long)Data.growthCoins+amount);});
         }
+        public bool TrySpendGrowth(int amount)
+        {
+            if(amount<=0||amount>Data.growthCoins)return false;
+            return Transaction(()=>Data.growthCoins-=amount);
+        }
         public bool CaptureProgress(bool? tutorialDone=null,bool? introSeen=null)
         {
             return Transaction(()=>{

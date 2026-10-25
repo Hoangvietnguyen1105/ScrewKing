@@ -24,12 +24,12 @@ namespace ScrewKing.Editor
         {
             Directory.CreateDirectory(Folder);AssetDatabase.Refresh();
             GameplayHudPrefabBuilder.Ensure();
-            string[] names={"ScreenHome","ScreenLoading","PopupSettings","PopupWin","PopupLose","PopupReward","GameplayHUD","ScrewKingUI"};
+            string[] names={"ScreenHome","ScreenLoading","PopupSettings","PopupWin","PopupLose","PopupReward","PopupBuyBooster","GameplayHUD","ScrewKingUI"};
             if(names.All(n=>File.Exists(Folder+"/"+n+".prefab")))return;
             PrepareBorders();
             SaveMissing("ScreenHome",Home);SaveMissing("ScreenLoading",Loading);SaveMissing("PopupSettings",Settings);
-            SaveMissing("PopupWin",()=>Result(true));SaveMissing("PopupLose",()=>Result(false));SaveMissing("PopupReward",Reward);
-            SaveMissing("ScrewKingUI",Root);UpgradeHud();AssetDatabase.SaveAssets();
+            SaveMissing("PopupWin",()=>Result(true));SaveMissing("PopupLose",()=>Result(false));SaveMissing("PopupReward",Reward);SaveMissing("PopupBuyBooster",BuyBooster);
+            SaveMissing("ScrewKingUI",Root);UpgradeHud();UpgradeBuyBooster();AssetDatabase.SaveAssets();
         }
         static void SaveMissing(string name,Func<GameObject> create)
         {
@@ -203,8 +203,8 @@ namespace ScrewKing.Editor
             Pic("Header",content,Art+"screw_setting/Layer 11 (merged) copy 2",170,292,410,108,true,1.5f);
             Pic("LeftBolt",content,Art+"screw_setting/Layer 10 copy 3",193,329,28,28);
             Pic("RightBolt",content,Art+"screw_setting/Layer 10 copy 3",529,329,28,28);
-            view.TitleLabel=RewardLabel("OfferTitle",content,"REVIVE!",225,303,300,80,52,Color.white,new Color(.58f,.31f,.01f));
-            view.TitleLabel.resizeTextForBestFit=true;view.TitleLabel.resizeTextMinSize=28;view.TitleLabel.resizeTextMaxSize=52;
+            view.TitleLabel=RewardLabel("OfferTitle",content,"REVIVE!",225,313,300,60,52,Color.white,new Color(.58f,.31f,.01f));
+            view.TitleLabel.verticalOverflow=VerticalWrapMode.Truncate;view.TitleLabel.resizeTextForBestFit=true;view.TitleLabel.resizeTextMinSize=28;view.TitleLabel.resizeTextMaxSize=52;
             Icon("CloseButton",content,"screw_setting/Layer 9 copy",new Rect(620,304,66,66),ScrewKingUiCommand.CancelReward);
             Pic("RewardMedallion",content,ReskinArt.UI+"Layer 17 copy 2",271,419,208,208).gameObject.SetActive(false);
             view.OfferIcon=Pic("ScrewIllustration",content,ReskinArt.Box(1),275,410,200,225);
@@ -218,6 +218,42 @@ namespace ScrewKing.Editor
             view.StatusLabel=RewardLabel("Status",content,"Watch a video to continue.",115,906,520,28,19,new Color(.52f,.37f,.16f));
             var cancel=Button("CancelButton",content,"Give up",new Rect(245,955,260,96),ScrewKingUiCommand.CancelReward,red:true,size:32);
             PolishRewardButton(cancel);view.CancelButtonLabel=cancel.GetComponentInChildren<Text>();
+        }
+        internal static GameObject BuyBooster()
+        {
+            var go=Screen("PopupBuyBooster");BuildBuyBoosterContents(go);return go;
+        }
+        // Same panel family as PopupReward: the free video stays the primary action, currency is the secondary one.
+        internal static void BuildBuyBoosterContents(GameObject go)
+        {
+            var view=go.GetComponent<ScrewKingUiView>();
+            Solid("Dimmer",go.transform,new Color(.045f,.025f,.01f,.76f));
+            Pic("CurrencyBadge",go.transform,Art+"screw_win_lose/Layer 3 copy 9",70,37,220,69,true);
+            Pic("CurrencyIcon",go.transform,Art+"screw_win_lose/Layer 3 copy 8",44,22,94,103);
+            view.CounterLabel=Label("CurrencyBalance",go.transform,"0",137,44,143,52,42);
+            var content=Content(go);view.AnimatedContent=(RectTransform)content;view.EntranceDuration=.23f;
+            Pic("Panel",content,Art+"screw_setting/Rectangle 1 copy 2",70,290,610,820,true,1.1f);
+            Pic("Header",content,Art+"screw_setting/Layer 11 (merged) copy 2",170,252,410,108,true,1.5f);
+            Pic("LeftBolt",content,Art+"screw_setting/Layer 10 copy 3",193,289,28,28);
+            Pic("RightBolt",content,Art+"screw_setting/Layer 10 copy 3",529,289,28,28);
+            view.TitleLabel=RewardLabel("OfferTitle",content,"ADD SLOT",225,273,300,60,52,Color.white,new Color(.58f,.31f,.01f));
+            view.TitleLabel.verticalOverflow=VerticalWrapMode.Truncate;view.TitleLabel.resizeTextForBestFit=true;view.TitleLabel.resizeTextMinSize=28;view.TitleLabel.resizeTextMaxSize=52;
+            Icon("CloseButton",content,"screw_setting/Layer 9 copy",new Rect(620,264,66,66),ScrewKingUiCommand.CancelReward);
+            view.OfferIcon=Pic("BoosterIcon",content,ReskinArt.UI+"Layer 35",265,375,220,210);
+            view.SlotIcon=Resources.Load<Sprite>(ReskinArt.UI+"Layer 35");view.ClearIcon=Resources.Load<Sprite>(ReskinArt.UI+"Layer 33");
+            view.HammerIcon=Resources.Load<Sprite>(ReskinArt.UI+"Layer 34");view.BoxIcon=Resources.Load<Sprite>(ReskinArt.Box(1));
+            view.DescriptionLabel=RewardLabel("Description",content,"Make room with\none extra slot.",125,598,500,83,32,new Color(.4f,.23f,.07f));
+            var watch=Button("WatchButton",content,"Free",new Rect(177,700,396,140),ScrewKingUiCommand.WatchReward,size:52);
+            PolishRewardButton(watch);
+            var watchLabel=watch.GetComponentInChildren<Text>().rectTransform;watchLabel.anchoredPosition=new Vector2(80,0);watchLabel.sizeDelta=new Vector2(296,140);
+            Pic("VideoBadge",watch.transform,ReskinArt.UI+"Layer 18",38,47,62,47);
+            RewardLabel("OrDivider",content,"- or -",225,846,300,36,28,new Color(.52f,.37f,.16f));
+            var buy=Button("BuyButton",content,"900",new Rect(207,888,336,124),ScrewKingUiCommand.BuyBooster,orange:true,size:50);
+            PolishRewardButton(buy);view.PriceLabel=buy.GetComponentInChildren<Text>();
+            var priceRect=view.PriceLabel.rectTransform;priceRect.anchoredPosition=new Vector2(118,0);priceRect.sizeDelta=new Vector2(180,124);
+            Pic("PriceIcon",buy.transform,Art+"screw_win_lose/Layer 3 copy 8",58,24,64,76);
+            view.StatusLabel=RewardLabel("Status",content,"",115,1030,520,30,22,new Color(.66f,.16f,.06f));
+            EditorUtility.SetDirty(view);
         }
         static Text RewardLabel(string name,Transform parent,string text,float x,float y,float w,float h,int size,Color color,Color? outline=null)
         {
@@ -287,6 +323,27 @@ namespace ScrewKing.Editor
                 PrefabUtility.SaveAsPrefabAsset(root,RootPath);
             }finally{PrefabUtility.UnloadPrefabContents(root);}
         }
+        // Explicit migration only: nests the booster popup next to PopupReward without touching other views.
+        internal static void UpgradeBuyBooster()
+        {
+            var root=PrefabUtility.LoadPrefabContents(RootPath);
+            try{
+                var ui=root.GetComponent<ScrewKingUiController>();if(ui.BuyBooster)return;
+                var prefab=AssetDatabase.LoadAssetAtPath<GameObject>(Folder+"/PopupBuyBooster.prefab");
+                var popup=(GameObject)PrefabUtility.InstantiatePrefab(prefab,ui.DesignArea);popup.transform.SetSiblingIndex(ui.Reward.transform.GetSiblingIndex()+1);popup.SetActive(false);
+                ui.BuyBooster=popup.GetComponent<ScrewKingUiView>();PrefabUtility.SaveAsPrefabAsset(root,RootPath);
+            }finally{PrefabUtility.UnloadPrefabContents(root);}
+        }
+        // Explicit migration only: one-line popup titles shrink to fit instead of wrapping ("GLASS HAMMER").
+        internal static bool FixRewardTitle()
+        {
+            string path=Folder+"/PopupReward.prefab";var root=PrefabUtility.LoadPrefabContents(path);
+            try{
+                var title=root.GetComponent<ScrewKingUiView>().TitleLabel;if(!title||title.verticalOverflow==VerticalWrapMode.Truncate)return false;
+                var rect=title.rectTransform;if(rect.sizeDelta.y>60){rect.anchoredPosition+=new Vector2(0,-(rect.sizeDelta.y-60)*.5f);rect.sizeDelta=new Vector2(rect.sizeDelta.x,60);}
+                title.verticalOverflow=VerticalWrapMode.Truncate;title.resizeTextForBestFit=true;PrefabUtility.SaveAsPrefabAsset(root,path);return true;
+            }finally{PrefabUtility.UnloadPrefabContents(root);}
+        }
         static GameObject Root()
         {
             var go=new GameObject("ScrewKingUI",typeof(RectTransform),typeof(Canvas),typeof(CanvasScaler),typeof(GraphicRaycaster),typeof(ScrewKingUiController));
@@ -295,8 +352,8 @@ namespace ScrewKing.Editor
             var ui=go.GetComponent<ScrewKingUiController>();var design=new GameObject("DesignArea",typeof(RectTransform)).GetComponent<RectTransform>();design.SetParent(go.transform,false);Center(design);ui.DesignArea=design;
             Func<string,ScrewKingUiView> instantiate=name=>{
                 var asset=AssetDatabase.LoadAssetAtPath<GameObject>(Folder+"/"+name+".prefab");var instance=(GameObject)PrefabUtility.InstantiatePrefab(asset,design);return instance.GetComponent<ScrewKingUiView>();};
-            ui.Home=instantiate("ScreenHome");ui.Settings=instantiate("PopupSettings");ui.Win=instantiate("PopupWin");ui.Lose=instantiate("PopupLose");ui.Reward=instantiate("PopupReward");ui.Loading=instantiate("ScreenLoading");
-            foreach(var view in new[]{ui.Settings,ui.Win,ui.Lose,ui.Reward,ui.Loading})view.gameObject.SetActive(false);
+            ui.Home=instantiate("ScreenHome");ui.Settings=instantiate("PopupSettings");ui.Win=instantiate("PopupWin");ui.Lose=instantiate("PopupLose");ui.Reward=instantiate("PopupReward");ui.BuyBooster=instantiate("PopupBuyBooster");ui.Loading=instantiate("ScreenLoading");
+            foreach(var view in new[]{ui.Settings,ui.Win,ui.Lose,ui.Reward,ui.BuyBooster,ui.Loading})view.gameObject.SetActive(false);
             var events=new GameObject("EventSystem",typeof(EventSystem),typeof(StandaloneInputModule));events.transform.SetParent(go.transform,false);ui.OwnEventSystem=events.GetComponent<EventSystem>();return go;
         }
         static void PrepareBorders()
@@ -313,7 +370,7 @@ namespace ScrewKing.Editor
         public static void Validate()
         {
             int buttons=0,images=0;var root=AssetDatabase.LoadAssetAtPath<GameObject>(RootPath);if(!root)throw new Exception("Missing UI prefab");
-            var controller=root.GetComponent<ScrewKingUiController>();if(!controller.Home||!controller.Settings||!controller.Win||!controller.Lose||!controller.Reward||!controller.Loading)throw new Exception("Missing view binding");
+            var controller=root.GetComponent<ScrewKingUiController>();if(!controller.Home||!controller.Settings||!controller.Win||!controller.Lose||!controller.Reward||!controller.BuyBooster||!controller.Loading)throw new Exception("Missing view binding");
             if(!controller.Gameplay || controller.Gameplay.transform.GetSiblingIndex()!=0)throw new Exception("Gameplay HUD must be the first Canvas child, below all popup views");
             var hud=controller.Gameplay;
             if(!hud.IsAuthored||hud.BufferSlots.Length!=16||!hud.ClosingBoxPrefab||!hud.FlyingScrewPrefab||!hud.Guide)throw new Exception("Gameplay HUD is not backed by authored widget prefabs");
@@ -323,7 +380,7 @@ namespace ScrewKing.Editor
                 var button=action.GetComponent<Button>();if(!button||button.onClick.GetPersistentEventCount()!=1||button.onClick.GetPersistentTarget(0)!=action||button.onClick.GetPersistentMethodName(0)!="Invoke")throw new Exception("Unwired button: "+action.name);buttons++;}
             foreach(var image in root.GetComponentsInChildren<Image>(true)){if(image.sprite)images++;}
             string output=Path.GetFullPath(Path.Combine(Application.dataPath,"../../Builds/NewArtUI"));Directory.CreateDirectory(output);
-            File.WriteAllText(Path.Combine(output,"prefab-wiring.json"),"{\"passed\":true,\"screen_prefabs\":6,\"root_prefab\":true,\"hud_below_popups\":true,\"authored_hud\":true,\"buffer_widgets\":16,\"wired_buttons\":"+buttons+",\"sprite_images\":"+images+",\"existing_prefabs_preserved\":true}");
+            File.WriteAllText(Path.Combine(output,"prefab-wiring.json"),"{\"passed\":true,\"screen_prefabs\":7,\"root_prefab\":true,\"hud_below_popups\":true,\"authored_hud\":true,\"buffer_widgets\":16,\"wired_buttons\":"+buttons+",\"sprite_images\":"+images+",\"existing_prefabs_preserved\":true}");
             Debug.Log("UI_PREFABS_VERIFIED buttons="+buttons+" images="+images);
         }
     }

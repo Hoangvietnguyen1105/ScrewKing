@@ -28,7 +28,7 @@ namespace ScrewKing
             // Authored positions are captured once; binding again must not treat shifted positions as authored.
             if(canvasRect==(RectTransform)ui.transform){Apply();return;}
             canvasRect=(RectTransform)ui.transform;items.Clear();lastScreen=Vector2.zero;
-            foreach(var view in new MonoBehaviour[]{ui.Home,ui.Settings,ui.Win,ui.Lose,ui.Reward,ui.Loading,ui.Shortcut,ui.Revisit})
+            foreach(var view in new MonoBehaviour[]{ui.Home,ui.Settings,ui.Win,ui.Lose,ui.Reward,ui.BuyBooster,ui.Loading,ui.Shortcut,ui.Revisit})
                 if(view)Collect(view.transform);
             if(ui.Gameplay){var authored=ui.Gameplay.transform.Find("AuthoredHUD");Collect(authored?authored:ui.Gameplay.transform);}
             if(ui.Loading)foreach(var door in new[]{ui.Loading.LeftDoor,ui.Loading.RightDoor}){

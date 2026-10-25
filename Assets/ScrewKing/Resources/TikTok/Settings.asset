@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1875adc15c54748c1baf595c9ad10318, type: 3}
   m_Name: Settings
   m_EditorClassIdentifier: Assembly-CSharp::ScrewKing.TikTokSettings
-  AppId: 
+  AppId: mgz13b6aqp88x420
   LoginEndpoint: 
-  TermsUrl: 
-  PrivacyUrl: 
-  EnableGrowthFeatures: 1
+  TermsUrl: https://www.moodboost.studio/?focus=moodcheck
+  PrivacyUrl: https://www.moodboost.studio/?focus=moodcheck
+  EnableGrowthFeatures: 0
   ShowPlatformUiInPreview: 1
   AutoGuideAfterTutorial: 1
   ShortcutReward: 100

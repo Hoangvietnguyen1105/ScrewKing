@@ -126,6 +126,7 @@ namespace ScrewKing
             if(Busy&&Time.realtimeSinceStartup>deadline){Busy=false;request++;Status="Request timed out. Please try again.";missionStatus.Clear();}
             if(!Busy&&SignedIn&&probes.Count>0){var mission=probes.Dequeue();queued.Remove(mission);Check(mission);}
         }
+        public bool SpendEarned(int amount)=>SaveReady&&Ledger!=null&&Ledger.TrySpendGrowth(amount);
         public void PersistProgress(){if(SaveReady&&Ledger!=null&&!Ledger.CaptureProgress())Status="Could not save. Please try again.";}
         public void TutorialCompleted(){if(SaveReady&&Ledger!=null)Ledger.CaptureProgress(tutorialDone:true);}
         public void PumpHomeGuide(bool unobstructed)

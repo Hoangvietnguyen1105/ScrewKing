@@ -78,8 +78,8 @@ namespace ScrewKing.Editor
             yield return null;yield return null;
             if(!Check(rect.anchoredPosition==editedHudPosition&&caption.text=="Custom slot","HUD static layout/text edits preserved"))yield break;
             slotButton.onClick.Invoke();yield return null;yield return null;
-            if(!Check(game.Model.Prompt==SourcePrompt.Slot&&ui.Reward.gameObject.activeSelf,"authored booster OnClick"))yield break;
-            Click(ui.Reward,ScrewKingUiCommand.CancelReward);yield return null;
+            if(!Check(game.Model.Prompt==SourcePrompt.Slot&&ui.BuyBooster.gameObject.activeSelf&&!ui.Reward.gameObject.activeSelf,"authored booster OnClick opens PopupBuyBooster"))yield break;
+            Click(ui.BuyBooster,ScrewKingUiCommand.CancelReward);yield return null;
             game.UiInvoke(ScrewKingUiCommand.Settings);yield return null;double clock=game.Model.Clock;yield return new WaitForSecondsRealtime(.3f);
             if(!Check(Math.Abs(game.Model.Clock-clock)<.0001,"settings pauses gameplay"))yield break;
             Click(ui.Settings,ScrewKingUiCommand.Resume);
@@ -149,8 +149,8 @@ namespace ScrewKing.Editor
             complete.Invoke(game,new object[]{completed,true,rewardVersion,wonModel});
             if(!Check(game.UiCurrency==currencyBefore+40&&!game.UiDoubleRewardClaimed,"late callback cannot reward a new round"))yield break;
             var before=game.Model;game.Model.Request(SourcePrompt.Slot);yield return null;
-            if(!Check(ui.Reward.gameObject.activeSelf,"reward prompt uses prefab"))yield break;
-            Click(ui.Reward,ScrewKingUiCommand.CancelReward);yield return null;
+            if(!Check(ui.BuyBooster.gameObject.activeSelf,"booster prompt uses prefab"))yield break;
+            Click(ui.BuyBooster,ScrewKingUiCommand.CancelReward);yield return null;
             if(!Check(game.Model.Prompt==SourcePrompt.None&&game.Model.HoleCapacity==5,"cancel grants nothing"))yield break;
             // Inject only the presentation state; gameplay loss rules are not under test here.
             typeof(PortModel).GetProperty("Lost").SetValue(game.Model,true);yield return null;yield return null;

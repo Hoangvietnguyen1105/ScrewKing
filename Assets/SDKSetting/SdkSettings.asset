@@ -13,7 +13,17 @@ MonoBehaviour:
   m_Name: SdkSettings
   m_EditorClassIdentifier: MoodBoost.Sdk.Unity::MoodBoost.Sdk.Unity.SdkSettings
   tikTok:
-    rewarded: []
-    interstitial: []
+    rewarded:
+    - ad7700083980120557576
+    interstitial:
+    - ad7699408718408714248
   tagForUnderAgeOfConsent: 0
-  remoteConfigDefaults: []
+  remoteConfigDefaults:
+  - key: ads_interstitial_first_level
+    value: 1
+  - key: ads_interstitial_first_cooldown_seconds
+    value: 15
+  - key: ads_interstitial_cooldown_seconds
+    value: 15
+  - key: ads_interstitial_cooldown_after_rewarded_seconds
+    value: 15
