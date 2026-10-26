@@ -13,10 +13,9 @@ MonoBehaviour:
   m_Name: Settings
   m_EditorClassIdentifier: Assembly-CSharp::ScrewKing.TikTokSettings
   AppId: mgz13b6aqp88x420
-  LoginEndpoint: 
   TermsUrl: https://www.moodboost.studio/?focus=moodcheck
   PrivacyUrl: https://www.moodboost.studio/?focus=moodcheck
-  EnableGrowthFeatures: 0
+  EnableGrowthFeatures: 1
   ShowPlatformUiInPreview: 1
   AutoGuideAfterTutorial: 1
   ShortcutReward: 100

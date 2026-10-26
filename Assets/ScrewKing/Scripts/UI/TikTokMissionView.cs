@@ -23,9 +23,9 @@ namespace ScrewKing
             AmountLabel.text="+"+features.RewardAmount(Mission)+" screws";
             StatusLabel.text=features.StatusFor(Mission);
             bool claimed=features.Claimed(Mission),eligible=features.Eligible(Mission);
-            PrimaryLabel.text=claimed?"Received":features.Busy?"Please wait…":!features.IsLive?"Open in TikTok":!features.SignedIn?"Retry":eligible?"Claim reward":Mission==TikTokMission.Shortcut?"Add now":"Get started";
+            PrimaryLabel.text=claimed?"Received":features.Busy?"Please wait…":!features.IsLive?"Open in TikTok":eligible?"Claim reward":Mission==TikTokMission.Shortcut?"Add now":"Get started";
             PrimaryButton.interactable=features.CanAct(Mission);
-            CheckButton.interactable=!features.Busy&&features.SaveReady&&features.SignedIn&&features.Supported(Mission)&&!claimed;
+            CheckButton.interactable=!features.Busy&&features.Ready&&features.Supported(Mission)&&!claimed;
             float t=Mathf.Clamp01((Time.unscaledTime-opened)/.23f);float v=t-1;
             Content.localScale=contentScale*Mathf.LerpUnclamped(.9f,1,1+2.70158f*v*v*v+1.70158f*v*v);
         }

@@ -25,7 +25,7 @@ SDK file parity, base tracking schema/state transitions, Editor rewarded skip/co
 
 These are local checks. App ID/ad-unit IDs, actual TikTok tracking delivery, live ads, host lifecycle/storage/touch/safe areas, startup/memory and converted package size still require the TikTok host and devices. No tt-minigame package was produced or uploaded.
 
-The base itself uses a null remote-config backend and Unity OnApplicationPause lifecycle. Those base implementations were preserved. Game-side login, shortcut, revisit and native save capabilities were added separately on 2026-10-24; see TIKTOK_CAPABILITIES_VI.md for configuration and unverified release prerequisites. Unity 6 host compatibility remains unverified; see the official guide before selecting the release toolchain.
+The base itself uses a null remote-config backend and Unity OnApplicationPause lifecycle. Those base implementations were preserved. Game-side shortcut, revisit and native save capabilities were added separately; since 2026-10-26 they follow the GameFramework sample (TikTok mission rewards plus ReportMissionRewardGranted, no login or backend). See TIKTOK_CAPABILITIES_VI.md.
 
 Official references:
 - https://developers.tiktok.com/docs/en/build-mini-games-with-unity
@@ -35,4 +35,4 @@ NewArtUI screens and popups are now integrated in both projects. See NEW_UI_ART.
 
 UI is now authored in uGUI prefabs, including the gameplay HUD. See EDIT_UI_VI.md for direct prefab editing. Runtime code only binds state and animates Motion nodes. Latest browser output: 53419806 bytes.
 
-Platform capabilities (24/10/2026): see [TIKTOK_CAPABILITIES_VI.md](TIKTOK_CAPABILITIES_VI.md). Prefabs and code are wired; live credentials/backend/Portal setup and a supported native release toolchain remain required.
+Platform capabilities (24/10/2026): see [TIKTOK_CAPABILITIES_VI.md](TIKTOK_CAPABILITIES_VI.md). Prefabs and code are wired; no login backend is needed. Live-device verification remains.

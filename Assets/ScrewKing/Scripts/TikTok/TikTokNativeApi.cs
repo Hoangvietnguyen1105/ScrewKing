@@ -22,13 +22,10 @@ namespace ScrewKing
                 result(true);
             });
         }
+        // Revisit prefers GetRevisitMissionReward (TikTok 46+) and falls back to the older entrance mission check.
         public bool Supports(TikTokMission m)=>m==TikTokMission.Shortcut?
             TTSDK.CanIUse.AddShortcut&&TTSDK.CanIUse.GetShortcutMissionReward:
-            TTSDK.CanIUse.StartEntranceMission&&TTSDK.CanIUse.GetEntranceMissionReward;
-        public void Login(Action<string> success,Action failure)
-        {
-            if(!TTSDK.CanIUse.Login){failure();return;}TT.Login(code=>success(code),error=>failure());
-        }
+            TTSDK.CanIUse.StartEntranceMission&&(TTSDK.CanIUse.GetRevisitMissionReward||TTSDK.CanIUse.GetEntranceMissionReward);
         public void Navigate(TikTokMission mission,Action<bool> result)
         {
             if(!Supports(mission)){result(false);return;}
@@ -39,7 +36,13 @@ namespace ScrewKing
         {
             if(!Supports(mission)){result(false,false);return;}
             if(mission==TikTokMission.Shortcut)TT.GetShortcutMissionReward(new GetShortcutMissionRewardParam{Success=data=>result(!ReferenceEquals(data,null),!ReferenceEquals(data,null)&&data.CanReceiveReward),Fail=error=>result(false,false)});
+            else if(TTSDK.CanIUse.GetRevisitMissionReward)TT.GetRevisitMissionReward(new TTGetRevisitMissionRewardParam{success=data=>result(!ReferenceEquals(data,null),!ReferenceEquals(data,null)&&data.canReceiveReward),fail=error=>result(false,false)});
             else TT.GetEntranceMissionReward(new TTGetEntranceMissionRewardParam{success=data=>result(!ReferenceEquals(data,null),!ReferenceEquals(data,null)&&data.canReceiveReward),fail=error=>result(false,false)});
+        }
+        public void ReportGranted(TikTokMission mission,Action<bool> result)
+        {
+            if(!TTSDK.CanIUse.ReportMissionRewardGranted){result(false);return;}
+            TT.ReportMissionRewardGranted(new TTReportMissionRewardGrantedParam{success=data=>result(true),fail=error=>result(false)});
         }
         public string LoadSave()
         {

@@ -21,7 +21,7 @@ namespace ScrewKing.Editor
             ledger.ObserveEligibility("player",TikTokMission.Revisit,true);Require(ledger.TryClaim("player",TikTokMission.Revisit,50)&&!ledger.TryClaim("player",TikTokMission.Revisit,50),"revisit grants once per UTC day");
             day="2026-10-25";Require(!ledger.Eligible("player",TikTokMission.Revisit),"yesterday eligibility cannot pay today");
             ledger.ObserveEligibility("player",TikTokMission.Revisit,true);Require(ledger.TryClaim("player",TikTokMission.Revisit,50)&&ledger.Claimed("player",TikTokMission.Shortcut),"next day revisit works; shortcut remains one-time");
-            Require(!TikTokSessionGateway.IsHttps("http://example.com")&&!TikTokSessionGateway.IsHttps("https://name:secret@example.com")&&TikTokSessionGateway.IsHttps("https://example.com/v1/tiktok/session"),"backend/legal HTTPS URL validation");
+            Require(!TikTokSettings.IsHttps("http://example.com")&&!TikTokSettings.IsHttps("https://name:secret@example.com")&&TikTokSettings.IsHttps("https://example.com/privacy"),"legal HTTPS URL validation");
             var ui=UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(UiPrefabBuilder.RootPath).GetComponent<ScrewKingUiController>();
             Require(ui.Shortcut&&ui.Revisit&&ui.ShortcutEntry&&ui.RevisitEntry,"serialized popup and Home entry references");
             Directory.CreateDirectory("../Builds/TikTok");File.WriteAllText("../Builds/TikTok/capability-ledger-tests.json","{\"passed\":true,\"atomic_save\":true,\"eligibility_required\":true,\"once_per_account\":true,\"daily_revisit\":true,\"restart\":true,\"prefab_wiring\":true}");

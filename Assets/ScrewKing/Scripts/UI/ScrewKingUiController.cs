@@ -93,7 +93,7 @@ namespace ScrewKing
                 if(action.Command==ScrewKingUiCommand.Privacy){bool visible=features&&!features.IsLive&&features.LegalConfigured(true);action.gameObject.SetActive(visible);allowed &= visible;}
                 if(action.Command==ScrewKingUiCommand.Terms){bool visible=features&&!features.IsLive&&features.LegalConfigured(false);action.gameObject.SetActive(visible);allowed &= visible;}
                 if(action.Command==ScrewKingUiCommand.TikTokMissionPrimary&&features&&features.OpenMission.HasValue)allowed &= features.CanAct(features.OpenMission.Value);
-                if(action.Command==ScrewKingUiCommand.TikTokMissionCheck&&features&&features.OpenMission.HasValue)allowed &= !features.Busy&&features.SignedIn&&features.Supported(features.OpenMission.Value)&&!features.Claimed(features.OpenMission.Value);
+                if(action.Command==ScrewKingUiCommand.TikTokMissionCheck&&features&&features.OpenMission.HasValue)allowed &= !features.Busy&&features.Ready&&features.Supported(features.OpenMission.Value)&&!features.Claimed(features.OpenMission.Value);
                 if(action.Command==ScrewKingUiCommand.Play)allowed &= !platformModal;
                 if(action.Command==ScrewKingUiCommand.WatchReward)allowed &= owner.UiRewardAvailable;
                 if(action.Command==ScrewKingUiCommand.CancelReward)allowed &= !owner.UiAdShowing;
