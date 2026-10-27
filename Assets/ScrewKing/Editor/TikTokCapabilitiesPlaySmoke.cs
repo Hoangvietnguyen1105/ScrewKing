@@ -81,10 +81,10 @@ namespace ScrewKing.Editor
             if(!Check(!features.ModalOpen,"tutorial follow-up does not spam after closing"))yield break;
             settings.AutoGuideAfterTutorial=false;
             ui.Invoke(ScrewKingUiCommand.TikTokShortcut);yield return null;
-            if(!Check(ui.Shortcut.gameObject.activeSelf&&!ui.Revisit.gameObject.activeSelf&&ui.Shortcut.AmountLabel.text=="+100 screws","Home shortcut entry opens editable popup"))yield break;
+            if(!Check(ui.Shortcut.gameObject.activeSelf&&!ui.Revisit.gameObject.activeSelf&&ui.Shortcut.AmountLabel.text=="100","Home shortcut entry opens editable popup"))yield break;
             ui.Shortcut.PrimaryButton.onClick.Invoke();yield return null;yield return null;
             if(!Check(game.UiCurrency==coins&&!features.Eligible(TikTokMission.Shortcut),"navigation success does not grant reward"))yield break;
-            api.ShortcutEligible=true;ui.Shortcut.CheckButton.onClick.Invoke();yield return null;
+            api.ShortcutEligible=true;features.Check(TikTokMission.Shortcut);yield return null;
             if(!Check(features.Eligible(TikTokMission.Shortcut)&&ui.Shortcut.PrimaryLabel.text=="Get reward","positive platform eligibility enables claim"))yield break;
             ui.Shortcut.PrimaryButton.onClick.Invoke();ui.Shortcut.PrimaryButton.onClick.Invoke();yield return null;
             if(!Check(game.UiCurrency==coins+100&&features.Claimed(TikTokMission.Shortcut)&&!ui.Shortcut.PrimaryButton.interactable&&api.Reports==1,"shortcut pays once, reports the grant and updates wallet/button"))yield break;

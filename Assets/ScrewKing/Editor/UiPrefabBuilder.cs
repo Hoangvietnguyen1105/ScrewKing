@@ -284,22 +284,55 @@ namespace ScrewKing.Editor
         }
         internal static GameObject CreateMissionPopup(TikTokMission mission)
         {
-            bool shortcut=mission==TikTokMission.Shortcut;
+            bool shortcut=mission==TikTokMission.Shortcut;const string Guide="Art/TikTokGuide/";
             var root=new GameObject(shortcut?"PopupTikTokShortcut":"PopupTikTokRevisit",typeof(RectTransform),typeof(TikTokMissionView));Center(root.GetComponent<RectTransform>());
             var view=root.GetComponent<TikTokMissionView>();view.Mission=mission;
             Solid("Dimmer",root.transform,new Color(.045f,.025f,.01f,.76f));var content=Content(root);view.Content=(RectTransform)content;
-            Pic("Panel",content,Art+"screw_setting/Rectangle 1 copy 2",60,270,630,860,true,1.1f);
-            Pic("Header",content,Art+"screw_setting/Layer 11 (merged) copy 2",130,230,490,112,true,1.5f);
-            var title=RewardLabel("Title",content,shortcut?"ADD TO HOME SCREEN":"REVISIT REWARD",160,247,430,70,44,Color.white,new Color(.58f,.31f,.01f));title.resizeTextForBestFit=true;title.resizeTextMinSize=28;title.resizeTextMaxSize=44;
-            Icon("CloseButton",content,"screw_setting/Layer 9 copy",new Rect(628,247,64,64),ScrewKingUiCommand.TikTokMissionClose);
-            Pic("RewardScrew",content,Art+"screw_win_lose/Layer 3 copy 8",310,367,130,157);
-            view.AmountLabel=RewardLabel("Amount",content,shortcut?"+100 screws":"+50 screws",155,535,440,56,40,new Color(.58f,.31f,.01f));
-            string steps=shortcut?"1. Tap Add Now\n2. Open Screw Match: King Puzzle from your Home Screen\n3. Get your reward":"1. Tap the menu icon in Profile\n2. Open Screw Match: King Puzzle\n3. Get your reward";
-            var description=RewardLabel("Steps",content,steps,122,620,506,135,27,new Color(.4f,.23f,.07f));description.lineSpacing=1.2f;
-            var primary=Button("PrimaryButton",content,shortcut?"Add Now":"Get started",new Rect(177,786,396,128),ScrewKingUiCommand.TikTokMissionPrimary,size:36);PolishRewardButton(primary);view.PrimaryButton=primary;view.PrimaryLabel=primary.GetComponentInChildren<Text>();
-            view.StatusLabel=RewardLabel("Status",content,"Open in TikTok to use these rewards.",115,926,520,66,22,new Color(.52f,.37f,.16f));
-            var check=Button("CheckButton",content,"Check reward",new Rect(195,1000,360,74),ScrewKingUiCommand.TikTokMissionCheck,size:27);PolishRewardButton(check);view.CheckButton=check;
+            Pic("Panel",content,Art+"screw_setting/Rectangle 1 copy 2",50,170,650,1075,true,1.1f);
+            Pic("Header",content,Art+"screw_setting/Layer 11 (merged) copy 2",130,128,490,112,true,1.5f);
+            var title=RewardLabel("Title",content,shortcut?"ADD TO HOME SCREEN":"TIKTOK BONUS",160,145,430,70,44,Color.white,new Color(.58f,.31f,.01f));title.resizeTextForBestFit=true;title.resizeTextMinSize=28;title.resizeTextMaxSize=44;
+            Icon("CloseButton",content,"screw_setting/Layer 9 copy",new Rect(20,140,84,84),ScrewKingUiCommand.TikTokMissionClose);
+            // Picture guide in the GameFramework sample's order: each step shows the TikTok screen the player has to tap.
+            if(shortcut){
+                Pic("Picture",MissionStep(content,"Step1",255,150,"1. Tap the ... menu"),Guide+"more_menu",165,50,260,87);
+                Pic("Picture",MissionStep(content,"Step2",420,230,"2. Tap Add to home screen"),Guide+"add_to_home",60,50,470,175);
+                var step3=MissionStep(content,"Step3",665,150,"3. Open game from home screen");
+                Pic("Tile",step3,Guide+"app_tile",250,48,96,96);Pic("Icon",step3,Art+"screw_win_lose/Layer 3 copy 8",268,58,60,72);
+            }else{
+                Pic("Picture",MissionStep(content,"Step1",255,150,"1. Tap the menu icon in profile"),Guide+"profile_tab",45,52,500,77);
+                var step2=MissionStep(content,"Step2",420,230,"2. Tap the TikTok Minis");
+                Pic("Profile",step2,Guide+"profile_tab",45,50,500,77);Pic("Menu",step2,Guide+"minis_menu",45,132,316,89);
+                Pic("Picture",MissionStep(content,"Step3",665,150,"3. Open game & Claim reward"),Guide+"minis_list",160,46,270,95);
+            }
+            var rewards=Pic("Rewards",content,Guide+"step_card",80,830,590,190,true,1).transform;
+            Pic("Banner",rewards,Guide+"rewards_banner",65,14,460,67);
+            Pic("RewardScrew",rewards,Art+"screw_win_lose/Layer 3 copy 8",190,92,72,87);
+            view.AmountLabel=RewardLabel("Amount",rewards,shortcut?"100":"50",270,100,160,70,52,new Color(.58f,.31f,.01f));view.AmountLabel.alignment=TextAnchor.MiddleLeft;
+            var primary=Button("PrimaryButton",content,shortcut?"Add Shortcut":"Go to Sidebar",new Rect(177,1038,396,120),ScrewKingUiCommand.TikTokMissionPrimary,orange:shortcut,size:36);PolishRewardButton(primary);view.PrimaryButton=primary;view.PrimaryLabel=primary.GetComponentInChildren<Text>();
+            view.StatusLabel=RewardLabel("Status",content,"Open in TikTok to use these rewards.",95,1166,560,40,21,new Color(.52f,.37f,.16f));
             return root;
+        }
+        // One numbered card of the mission popup's picture guide.
+        static Transform MissionStep(Transform content,string name,float y,float h,string text)
+        {
+            var card=Pic(name,content,"Art/TikTokGuide/step_card",80,y,590,h,true,1).transform;
+            var label=RewardLabel("Label",card,text,24,8,542,40,27,new Color(.4f,.23f,.07f));label.alignment=TextAnchor.MiddleLeft;label.resizeTextForBestFit=true;label.resizeTextMinSize=18;label.resizeTextMaxSize=27;
+            return card;
+        }
+        // Rebuilds both mission popups from CreateMissionPopup and relinks the nested instances in the root UI.
+        [MenuItem("Screw King/TikTok/Rebuild Mission Popups")]
+        public static void RebuildMissionPopups()
+        {
+            foreach(var mission in new[]{TikTokMission.Shortcut,TikTokMission.Revisit}){
+                var go=CreateMissionPopup(mission);PrefabUtility.SaveAsPrefabAsset(go,Folder+"/"+go.name+".prefab");UnityEngine.Object.DestroyImmediate(go);
+            }
+            var root=PrefabUtility.LoadPrefabContents(RootPath);
+            try{
+                var ui=root.GetComponent<ScrewKingUiController>();
+                ui.Shortcut=ui.DesignArea.Find("PopupTikTokShortcut").GetComponent<TikTokMissionView>();ui.Revisit=ui.DesignArea.Find("PopupTikTokRevisit").GetComponent<TikTokMissionView>();
+                ui.Shortcut.gameObject.SetActive(false);ui.Revisit.gameObject.SetActive(false);PrefabUtility.SaveAsPrefabAsset(root,RootPath);
+            }finally{PrefabUtility.UnloadPrefabContents(root);}
+            AssetDatabase.SaveAssets();
         }
         static GameObject Loading()
         {

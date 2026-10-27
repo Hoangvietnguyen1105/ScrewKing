@@ -20,12 +20,12 @@ namespace ScrewKing
         }
         public void Refresh(TikTokCapabilities features)
         {
-            AmountLabel.text="+"+features.RewardAmount(Mission)+" screws";
+            AmountLabel.text=features.RewardAmount(Mission).ToString();
             StatusLabel.text=features.StatusFor(Mission);
             bool claimed=features.Claimed(Mission),eligible=features.Eligible(Mission);
-            PrimaryLabel.text=claimed?"Received":features.Busy?"Please wait…":!features.IsLive?"Open in TikTok":eligible?"Get reward":Mission==TikTokMission.Shortcut?"Add Now":"Get started";
+            PrimaryLabel.text=claimed?"Received":features.Busy?"Please wait…":!features.IsLive?"Open in TikTok":eligible?"Get reward":Mission==TikTokMission.Shortcut?"Add Shortcut":"Go to Sidebar";
             PrimaryButton.interactable=features.CanAct(Mission);
-            CheckButton.interactable=!features.Busy&&features.Ready&&features.Supported(Mission)&&!claimed;
+            if(CheckButton)CheckButton.interactable=!features.Busy&&features.Ready&&features.Supported(Mission)&&!claimed;
             float t=Mathf.Clamp01((Time.unscaledTime-opened)/.23f);float v=t-1;
             Content.localScale=contentScale*Mathf.LerpUnclamped(.9f,1,1+2.70158f*v*v*v+1.70158f*v*v);
         }
