@@ -9,14 +9,14 @@ namespace ScrewKing
 {
     /// <summary>
     /// Internal test console for the itch.io web build: level jump, no ads, max coins and a log view.
-    /// IMGUI keeps it free of prefabs and scenes. Hidden mode leaves nothing on screen for video capture;
-    /// three quick taps in the top-left corner (or the ` key) bring the button back.
+    /// IMGUI keeps it free of prefabs and scenes. Hidden mode draws the DBG button fully transparent for video
+    /// capture, but it stays tappable in the same place; the ` key also toggles it.
     /// Labels stay ASCII: the web build has no system fonts for Vietnamese glyphs.
     /// </summary>
     public sealed class ScrewKingDebugConsole : MonoBehaviour
     {
         const string NoAdsKey = "ScrewKingDebug.NoAds", HiddenKey = "ScrewKingDebug.Hidden";
-        const float RefHeight = 960, Corner = .15f;
+        const float RefHeight = 960;
         const int MaxLogs = 200;
         static ScrewKingDebugConsole instance;
         public static bool NoAds { get; private set; } = true;
@@ -27,7 +27,6 @@ namespace ScrewKing
         string typed = "";
         Vector2 scroll;
         readonly Queue<string> lines = new Queue<string>();
-        int cornerTaps; float cornerTapAt;
         GUIStyle button, label, box, logLabel;
         float scale = 1;
         Rect toggleRect, panelRect;
@@ -42,7 +41,7 @@ namespace ScrewKing
         // Taps on the console must not also pull screws behind it.
         public static bool BlocksPointer(Vector2 screen)
         {
-            if(!instance || instance.hidden)return false;
+            if(!instance)return false;
             var gui=new Vector2(screen.x,Screen.height-screen.y)/instance.scale;
             return instance.toggleRect.Contains(gui) || (instance.open && instance.panelRect.Contains(gui));
         }
@@ -65,13 +64,8 @@ namespace ScrewKing
         void Update()
         {
             if(Input.GetKeyDown(KeyCode.BackQuote))SetHidden(!hidden);
-            if(!hidden || !Input.GetMouseButtonDown(0))return;
-            var p=Input.mousePosition;
-            if(p.x>Screen.width*Corner || p.y<Screen.height*(1-Corner))return;
-            cornerTaps=Time.unscaledTime-cornerTapAt<.6f?cornerTaps+1:1;cornerTapAt=Time.unscaledTime;
-            if(cornerTaps>=3){cornerTaps=0;SetHidden(false);}
         }
-        void SetHidden(bool value){hidden=value;open&=!value;PlayerPrefs.SetInt(HiddenKey,value?1:0);PlayerPrefs.Save();}
+        void SetHidden(bool value){hidden=value;PlayerPrefs.SetInt(HiddenKey,value?1:0);PlayerPrefs.Save();}
         void SetNoAds(bool value){NoAds=value;PlayerPrefs.SetInt(NoAdsKey,value?1:0);PlayerPrefs.Save();}
 
         void Styles()
@@ -85,14 +79,14 @@ namespace ScrewKing
 
         void OnGUI()
         {
-            if(hidden || !game)return;
+            if(!game)return;
             Styles();
             scale=Screen.height/RefHeight;
             GUI.matrix=Matrix4x4.Scale(new Vector3(scale,scale,1));
             float width=Screen.width/scale;
             // Mid-left edge stays clear of TikTok's reserved top and bottom bands.
             toggleRect=new Rect(4,RefHeight*.42f,64,44);
-            GUI.color=new Color(1,1,1,open?1:.6f);
+            GUI.color=new Color(1,1,1,hidden?0:open?1:.6f);
             if(GUI.Button(toggleRect,"DBG",button))open=!open;
             GUI.color=Color.white;
             if(!open){panelRect=Rect.zero;return;}
@@ -123,7 +117,7 @@ namespace ScrewKing
             if(GUILayout.Button("Block ads: "+(NoAds?"ON":"OFF"),button,GUILayout.Height(44)))SetNoAds(!NoAds);
             GUILayout.BeginHorizontal();
             if(GUILayout.Button(logs?"Hide logs":"Show logs",button,GUILayout.Height(44)))logs=!logs;
-            if(GUILayout.Button("Hide DBG button",button,GUILayout.Height(44)))SetHidden(true);
+            if(GUILayout.Button(hidden?"Show DBG button":"Hide DBG button",button,GUILayout.Height(44))){SetHidden(!hidden);open&=!hidden;}
             GUILayout.EndHorizontal();
             if(logs)
             {
