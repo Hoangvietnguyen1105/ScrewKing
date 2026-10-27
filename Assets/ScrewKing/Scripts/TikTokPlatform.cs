@@ -18,7 +18,11 @@ namespace ScrewKing
         public SdkContext Context { get; private set; }
         public ScrewKingLevelTelemetry Telemetry { get; private set; }
         public bool BootReady { get; private set; }
+#if SK_DEBUG_CONSOLE
+        public bool Ready=>ScrewKingDebugConsole.NoAds || Context!=null && Context.Ads.IsReady(AdFormat.Rewarded);
+#else
         public bool Ready=>Context!=null && Context.Ads.IsReady(AdFormat.Rewarded);
+#endif
         public bool Showing=>requestInProgress || adOnScreen;
         bool requestInProgress,adOnScreen,backgrounded,tutorialOpen;
         int tutorialIndex;
@@ -63,6 +67,10 @@ namespace ScrewKing
         async UniTaskVoid Rewarded(string placement,Action<bool> callback)
         {
             if(requestInProgress){callback(false);return;}
+#if SK_DEBUG_CONSOLE
+            // Internal web build: every rewarded placement pays out without showing an ad.
+            if(ScrewKingDebugConsole.NoAds){callback?.Invoke(true);return;}
+#endif
             requestInProgress=true;
             try{
                 var result=await Context.Ads.ShowRewardedAsync(placement,CancellationToken.None);
@@ -74,6 +82,9 @@ namespace ScrewKing
         async UniTaskVoid Interstitial(Action callback)
         {
             if(requestInProgress)return;
+#if SK_DEBUG_CONSOLE
+            if(ScrewKingDebugConsole.NoAds){callback?.Invoke();return;}
+#endif
             requestInProgress=true;
             try{await Context.Ads.ShowInterstitialAsync("level_complete",CancellationToken.None);}
             catch(Exception error){Debug.LogException(error);}

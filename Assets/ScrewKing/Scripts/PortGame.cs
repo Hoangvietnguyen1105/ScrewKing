@@ -162,6 +162,9 @@ namespace ScrewKing
             if(Input.GetMouseButtonDown(0))
             {
                 if(UiRoot && UiRoot.BlocksPointer(Input.mousePosition))return;
+#if SK_DEBUG_CONSOLE
+                if(ScrewKingDebugConsole.BlocksPointer(Input.mousePosition))return;
+#endif
                 var world=(Vector2)camera2d.ScreenToWorldPoint(Input.mousePosition);
                 if(hammer)
                 {

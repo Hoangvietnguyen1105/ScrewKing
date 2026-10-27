@@ -57,7 +57,19 @@ namespace ScrewKing.Editor
         public static void BuildBrowserPreview()=>BuildBrowser(false);
         [MenuItem("Screw King/TikTok/Build Optimized Browser Preview")]
         public static void BuildBrowserRelease()=>BuildBrowser(true);
-        static void BuildBrowser(bool release)
+        // Internal web build for itch.io: SK_DEBUG_CONSOLE adds level jump, ad blocking and max coins.
+        // The define is passed only to this build and never written to PlayerSettings, so the TikTok package cannot pick it up.
+        [MenuItem("Screw King/Debug/Build Itch.io Debug Web")]
+        public static void BuildItchDebug()
+        {
+            string folder=BuildBrowser(true,"ItchDebug","itch-debug-build.json",new[]{"SK_DEBUG_CONSOLE"});
+            string zip=folder+".zip";
+            if(File.Exists(zip))File.Delete(zip);
+            System.IO.Compression.ZipFile.CreateFromDirectory(folder,zip);
+            Debug.Log("SCREWKING_ITCH_DEBUG_ZIP "+zip);
+        }
+        static string BuildBrowser(bool release)=>BuildBrowser(release,release?"BrowserRelease":"BrowserPreview",release?"browser-release-build.json":"browser-build.json",Array.Empty<string>());
+        static string BuildBrowser(bool release,string folder,string report,string[] defines)
         {
             Preflight();
             if(!BuildPipeline.IsBuildTargetSupported(BuildTargetGroup.WebGL,BuildTarget.WebGL))throw new InvalidOperationException("Install WebGL Build Support for this Unity version first.");
@@ -74,10 +86,11 @@ namespace ScrewKing.Editor
                 PlayerSettings.WebGL.decompressionFallback=false;
                 PlayerSettings.runInBackground=false;
                 PlayerSettings.WebGL.template="APPLICATION:Default";
-                var result=BuildPipeline.BuildPlayer(new BuildPlayerOptions{scenes=new[]{"Assets/ScrewKing/Scenes/ScrewKing.unity"},locationPathName=Path.Combine(Output,release?"BrowserRelease":"BrowserPreview"),target=BuildTarget.WebGL,options=release?BuildOptions.None:BuildOptions.Development,extraScriptingDefines=Array.Empty<string>()});
-                File.WriteAllText(Path.Combine(Output,release?"browser-release-build.json":"browser-build.json"),"{\"result\":\""+result.summary.result+"\",\"errors\":"+result.summary.totalErrors+",\"bytes\":"+result.summary.totalSize+"}");
+                var result=BuildPipeline.BuildPlayer(new BuildPlayerOptions{scenes=new[]{"Assets/ScrewKing/Scenes/ScrewKing.unity"},locationPathName=Path.Combine(Output,folder),target=BuildTarget.WebGL,options=release?BuildOptions.None:BuildOptions.Development,extraScriptingDefines=defines});
+                File.WriteAllText(Path.Combine(Output,report),"{\"result\":\""+result.summary.result+"\",\"errors\":"+result.summary.totalErrors+",\"bytes\":"+result.summary.totalSize+"}");
                 if(result.summary.result!=BuildResult.Succeeded)throw new Exception("WebGL build failed");
                 Debug.Log("SCREWKING_WEBGL_BUILD_SUCCEEDED "+Output);
+                return Path.Combine(Output,folder);
             }finally{PlayerSettings.SetScriptingDefineSymbols(NamedBuildTarget.WebGL,previousSymbols);}
 
         }
