@@ -27,6 +27,10 @@ namespace ScrewKing
         PortGame owner;
         int request;
         float deadline;
+        bool platformSave;
+        // Missions TikTok reported claimable this session (the player came back through the sidebar or the home screen icon); each opens its popup once.
+        readonly Queue<TikTokMission> arrivals=new Queue<TikTokMission>();
+        readonly HashSet<TikTokMission> announced=new HashSet<TikTokMission>();
         readonly Dictionary<TikTokMission,string> missionStatus=new Dictionary<TikTokMission,string>();
         public string StatusFor(TikTokMission mission)=>Ready&&missionStatus.TryGetValue(mission,out var text)?text:Status;
         void SetStatus(TikTokMission mission,string text){missionStatus[mission]=text;}
@@ -34,7 +38,7 @@ namespace ScrewKing
         readonly HashSet<TikTokMission> queued=new HashSet<TikTokMission>();
         public void Configure(PortGame game,TikTokSettings config,ITikTokMiniGameApi implementation=null)
         {
-            if(api!=null){api.Resumed-=Resume;api.Dispose();}StopAllCoroutines();request++;Busy=false;SaveReady=false;OpenMission=null;probes.Clear();queued.Clear();missionStatus.Clear();
+            if(api!=null){api.Resumed-=Resume;api.Dispose();}StopAllCoroutines();request++;Busy=false;SaveReady=false;OpenMission=null;probes.Clear();queued.Clear();missionStatus.Clear();arrivals.Clear();announced.Clear();
             owner=game;Settings=config;
 #if MB_TIKTOK && UNITY_WEBGL && !UNITY_EDITOR
             api=implementation??new TikTokNativeApi();
@@ -44,11 +48,14 @@ namespace ScrewKing
             api.Resumed+=Resume;
             int ticket=Begin();
             api.Initialize(ok=>Finish(ticket,()=>{
+                string json;platformSave=api.IsLive;
+                // A host without TT saving still gets both entry rewards; the ledger then lives in local storage.
+                try{json=platformSave?api.LoadSave():PlayerPrefs.GetString(LocalSaveKey,"");}
+                catch{platformSave=false;json=PlayerPrefs.GetString(LocalSaveKey,"");}
                 try{
-                    string json=api.IsLive?api.LoadSave():PlayerPrefs.GetString(LocalSaveKey,"");
                     Ledger=new TikTokMissionLedger(json,Save);
                     SaveReady=true;
-                    if(api.IsLive&&!string.IsNullOrEmpty(json)&&owner)owner.RestorePlatformProgress(Ledger.Data);
+                    if(platformSave&&!string.IsNullOrEmpty(json)&&owner)owner.RestorePlatformProgress(Ledger.Data);
                     else Ledger.CaptureProgress();
                 }catch{SaveReady=false;Status="Saving unavailable. Please restart TikTok.";return;}
                 if(ok&&api.IsLive){Status="Choose a reward below.";Enqueue(TikTokMission.Shortcut);Enqueue(TikTokMission.Revisit);}
@@ -57,7 +64,7 @@ namespace ScrewKing
         }
         bool Save(string json)
         {
-            if(api.IsLive)return api.Save(json);
+            if(platformSave)return api.Save(json);
             PlayerPrefs.SetString(LocalSaveKey,json);PlayerPrefs.Save();return true;
         }
         int Begin(){Busy=true;deadline=Time.realtimeSinceStartup+18;return ++request;}
@@ -95,6 +102,7 @@ namespace ScrewKing
                 if(!Ledger.ObserveEligibility(Account,mission,eligible)){SetStatus(mission,"Could not save. Please try again.");return;}
                 SetStatus(mission,Eligible(mission)?"Your reward is ready!":"Open the game from the requested entry, then check again.");
                 Track("eligibility",eligible,mission);
+                if(Eligible(mission)&&announced.Add(mission))arrivals.Enqueue(mission);
             }));
         }
         public bool Claim(TikTokMission mission)
@@ -119,7 +127,10 @@ namespace ScrewKing
         public void TutorialCompleted(){if(SaveReady&&Ledger!=null)Ledger.CaptureProgress(tutorialDone:true);}
         public void PumpHomeGuide(bool unobstructed)
         {
-            if(!unobstructed||!Settings||!Settings.AutoGuideAfterTutorial||!AutoGuidePending||!Ready||Busy||ModalOpen)return;
+            if(!unobstructed||!Settings||!Ready||Busy||ModalOpen)return;
+            // Launched from the sidebar or the home screen icon: open that reward right away, like the GameFramework entry reward popup.
+            while(arrivals.Count>0){var arrived=arrivals.Dequeue();if(Eligible(arrived)){Open(arrived);return;}}
+            if(!Settings.AutoGuideAfterTutorial||!AutoGuidePending)return;
             var mission=Supported(TikTokMission.Shortcut)&&!Claimed(TikTokMission.Shortcut)?TikTokMission.Shortcut:TikTokMission.Revisit;
             if(Supported(mission)&&!Claimed(mission)&&Ledger.CaptureProgress(introSeen:true))Open(mission);
         }

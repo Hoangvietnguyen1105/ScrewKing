@@ -1463,16 +1463,16 @@ MonoBehaviour:
     m_Font: {fileID: 12800000, guid: 925c2fb36d7349788eab5222ad817ac0, type: 3}
     m_FontSize: 25
     m_FontStyle: 0
-    m_BestFit: 0
+    m_BestFit: 1
     m_MinSize: 10
-    m_MaxSize: 40
+    m_MaxSize: 25
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: HOME SCREEN
+  m_Text: ADD TO HOME SCREEN
 --- !u!114 &6172795535892888030
 MonoBehaviour:
   m_ObjectHideFlags: 0

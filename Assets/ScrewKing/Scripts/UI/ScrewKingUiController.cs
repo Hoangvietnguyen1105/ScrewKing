@@ -45,8 +45,8 @@ namespace ScrewKing
             if(Gameplay)Gameplay.gameObject.SetActive(!home);
             Home.Show(home);Settings.Show(settings&&!reward&&!won&&!lost&&!platformModal);
             Win.Show(won&&!reward&&!platformModal);Lose.Show(lost&&!reward&&!platformModal);Reward.Show(reward&&!booster&&!platformModal);if(BuyBooster)BuyBooster.Show(booster&&!platformModal);Loading.Show(LoadingVisible);
-            if(ShortcutEntry)ShortcutEntry.SetActive(features&&features.Visible&&(!features.IsLive||features.Supported(TikTokMission.Shortcut)));
-            if(RevisitEntry)RevisitEntry.SetActive(features&&features.Visible&&(!features.IsLive||features.Supported(TikTokMission.Revisit)));
+            if(ShortcutEntry)ShortcutEntry.SetActive(features&&features.Visible); // Always on the home screen; an old TikTok gets the update message in the popup.
+            if(RevisitEntry)RevisitEntry.SetActive(features&&features.Visible);
             if(Shortcut){bool visible=platformModal&&features.OpenMission==TikTokMission.Shortcut;Shortcut.Show(visible);if(visible)Shortcut.Refresh(features);}
             if(Revisit){bool visible=platformModal&&features.OpenMission==TikTokMission.Revisit;Revisit.Show(visible);if(visible)Revisit.Refresh(features);}
             if(features)features.PumpHomeGuide(home&&!settings&&!LoadingVisible);

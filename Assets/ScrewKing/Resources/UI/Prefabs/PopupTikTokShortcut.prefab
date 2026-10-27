@@ -79,7 +79,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: Add now
+  m_Text: Add Now
 --- !u!114 &5702022817841579416
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -174,7 +174,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: HOME SCREEN
+  m_Text: ADD TO HOME SCREEN
 --- !u!114 &1596777751016542499
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1009,12 +1009,12 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1.2
-  m_Text: '1. Add Screw King to Home Screen
+  m_Text: '1. Tap Add Now
 
-    2. Open it using the new shortcut
+    2. Open Screw Match: King Puzzle from your Home Screen
 
     3.
-    Return here to claim your reward'
+    Get your reward'
 --- !u!1 &5296521731746709383
 GameObject:
   m_ObjectHideFlags: 0

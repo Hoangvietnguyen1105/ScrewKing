@@ -797,12 +797,12 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1.2
-  m_Text: '1. Open your TikTok Profile menu
+  m_Text: '1. Tap the menu icon in Profile
 
-    2. Find Screw King in TikTok Minis
+    2. Open Screw Match: King Puzzle
 
     3.
-    Reopen the game and claim'
+    Get your reward'
 --- !u!1 &7448260979847543226
 GameObject:
   m_ObjectHideFlags: 0

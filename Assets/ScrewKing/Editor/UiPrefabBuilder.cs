@@ -270,7 +270,7 @@ namespace ScrewKing.Editor
         }
         internal static void CreateGrowthEntry(Transform home,bool shortcut)
         {
-            var button=Button(shortcut?"TikTokShortcutEntry":"TikTokRevisitEntry",home,shortcut?"HOME SCREEN":"REVISIT REWARD",new Rect(shortcut?65:390,180,295,102),shortcut?ScrewKingUiCommand.TikTokShortcut:ScrewKingUiCommand.TikTokRevisit,orange:true,size:25);
+            var button=Button(shortcut?"TikTokShortcutEntry":"TikTokRevisitEntry",home,shortcut?"ADD TO HOME SCREEN":"REVISIT REWARD",new Rect(shortcut?65:390,180,295,102),shortcut?ScrewKingUiCommand.TikTokShortcut:ScrewKingUiCommand.TikTokRevisit,orange:true,size:25);var entryLabel=button.GetComponentInChildren<Text>();entryLabel.resizeTextForBestFit=true;entryLabel.resizeTextMinSize=10;entryLabel.resizeTextMaxSize=25;
             PolishRewardButton(button);var label=button.GetComponentInChildren<Text>();label.font=Resources.Load<Font>("UI/Fonts/LilitaOne-Regular");label.fontStyle=FontStyle.Normal;
             label.rectTransform.anchoredPosition=new Vector2(62,0);label.rectTransform.sizeDelta=new Vector2(215,102);
             Pic("ScrewIcon",button.transform,Art+"screw_win_lose/Layer 3 copy 8",16,23,52,63);
@@ -290,13 +290,13 @@ namespace ScrewKing.Editor
             Solid("Dimmer",root.transform,new Color(.045f,.025f,.01f,.76f));var content=Content(root);view.Content=(RectTransform)content;
             Pic("Panel",content,Art+"screw_setting/Rectangle 1 copy 2",60,270,630,860,true,1.1f);
             Pic("Header",content,Art+"screw_setting/Layer 11 (merged) copy 2",130,230,490,112,true,1.5f);
-            var title=RewardLabel("Title",content,shortcut?"HOME SCREEN":"REVISIT REWARD",160,247,430,70,44,Color.white,new Color(.58f,.31f,.01f));title.resizeTextForBestFit=true;title.resizeTextMinSize=28;title.resizeTextMaxSize=44;
+            var title=RewardLabel("Title",content,shortcut?"ADD TO HOME SCREEN":"REVISIT REWARD",160,247,430,70,44,Color.white,new Color(.58f,.31f,.01f));title.resizeTextForBestFit=true;title.resizeTextMinSize=28;title.resizeTextMaxSize=44;
             Icon("CloseButton",content,"screw_setting/Layer 9 copy",new Rect(628,247,64,64),ScrewKingUiCommand.TikTokMissionClose);
             Pic("RewardScrew",content,Art+"screw_win_lose/Layer 3 copy 8",310,367,130,157);
             view.AmountLabel=RewardLabel("Amount",content,shortcut?"+100 screws":"+50 screws",155,535,440,56,40,new Color(.58f,.31f,.01f));
-            string steps=shortcut?"1. Add Screw King to Home Screen\n2. Open it using the new shortcut\n3. Return here to claim your reward":"1. Open your TikTok Profile menu\n2. Find Screw King in TikTok Minis\n3. Reopen the game and claim";
+            string steps=shortcut?"1. Tap Add Now\n2. Open Screw Match: King Puzzle from your Home Screen\n3. Get your reward":"1. Tap the menu icon in Profile\n2. Open Screw Match: King Puzzle\n3. Get your reward";
             var description=RewardLabel("Steps",content,steps,122,620,506,135,27,new Color(.4f,.23f,.07f));description.lineSpacing=1.2f;
-            var primary=Button("PrimaryButton",content,shortcut?"Add now":"Get started",new Rect(177,786,396,128),ScrewKingUiCommand.TikTokMissionPrimary,size:36);PolishRewardButton(primary);view.PrimaryButton=primary;view.PrimaryLabel=primary.GetComponentInChildren<Text>();
+            var primary=Button("PrimaryButton",content,shortcut?"Add Now":"Get started",new Rect(177,786,396,128),ScrewKingUiCommand.TikTokMissionPrimary,size:36);PolishRewardButton(primary);view.PrimaryButton=primary;view.PrimaryLabel=primary.GetComponentInChildren<Text>();
             view.StatusLabel=RewardLabel("Status",content,"Open in TikTok to use these rewards.",115,926,520,66,22,new Color(.52f,.37f,.16f));
             var check=Button("CheckButton",content,"Check reward",new Rect(195,1000,360,74),ScrewKingUiCommand.TikTokMissionCheck,size:27);PolishRewardButton(check);view.CheckButton=check;
             return root;

@@ -85,7 +85,7 @@ namespace ScrewKing.Editor
             ui.Shortcut.PrimaryButton.onClick.Invoke();yield return null;yield return null;
             if(!Check(game.UiCurrency==coins&&!features.Eligible(TikTokMission.Shortcut),"navigation success does not grant reward"))yield break;
             api.ShortcutEligible=true;ui.Shortcut.CheckButton.onClick.Invoke();yield return null;
-            if(!Check(features.Eligible(TikTokMission.Shortcut)&&ui.Shortcut.PrimaryLabel.text=="Claim reward","positive platform eligibility enables claim"))yield break;
+            if(!Check(features.Eligible(TikTokMission.Shortcut)&&ui.Shortcut.PrimaryLabel.text=="Get reward","positive platform eligibility enables claim"))yield break;
             ui.Shortcut.PrimaryButton.onClick.Invoke();ui.Shortcut.PrimaryButton.onClick.Invoke();yield return null;
             if(!Check(game.UiCurrency==coins+100&&features.Claimed(TikTokMission.Shortcut)&&!ui.Shortcut.PrimaryButton.interactable&&api.Reports==1,"shortcut pays once, reports the grant and updates wallet/button"))yield break;
             ui.Invoke(ScrewKingUiCommand.TikTokMissionClose);ui.Invoke(ScrewKingUiCommand.TikTokRevisit);yield return null;
@@ -98,6 +98,10 @@ namespace ScrewKing.Editor
             if(!Check(game.UiCurrency==coins+150&&features.Claimed(TikTokMission.Shortcut)&&features.Claimed(TikTokMission.Revisit),"restart preserves credits and both receipts"))yield break;
             restarted.Resume();yield return null;
             if(!Check(game.UiCurrency==coins+150,"foreground return does not auto-pay a duplicate reward"))yield break;
+            var arriving=new FakeCapabilitiesApi{ShortcutEligible=true};features.Configure(game,settings,arriving);yield return null;yield return null;yield return null;features.PumpHomeGuide(true);yield return null;
+            if(!Check(features.OpenMission==TikTokMission.Shortcut&&ui.Shortcut.gameObject.activeSelf&&ui.Shortcut.PrimaryLabel.text=="Get reward","launch from the home screen icon opens its reward popup"))yield break;
+            features.Close();features.PumpHomeGuide(true);yield return null;
+            if(!Check(!features.ModalOpen,"arrival popup opens once per session"))yield break;
             var staleApi=new FakeCapabilitiesApi{DelayNavigation=true};features.Configure(game,settings,staleApi);yield return null;yield return null;yield return null;
             features.Primary(TikTokMission.Shortcut);var stale=staleApi.NavigationCallback;
             if(!Check(features.Busy&&stale!=null,"delayed native navigation"))yield break;
@@ -111,7 +115,7 @@ namespace ScrewKing.Editor
             if(!Check(ui.Revisit.gameObject.activeSelf&&!ui.Revisit.PrimaryButton.interactable,"preview UI never pretends platform success"))yield break;
             ui.Invoke(ScrewKingUiCommand.TikTokMissionClose);yield return null;
             if(!Check(game.UiIsHome&&!ui.Revisit.gameObject.activeSelf,"close returns to Home"))yield break;
-            End(true,"Fake-host integration: no-login mission rewards with grant report, Home/popup wiring, navigation never pays, eligibility required, atomic claim/rollback, duplicate/restart/resume protection, stale callback rejection and preview/HTTPS guards passed. Live TikTok credentials were not used.");
+            End(true,"Fake-host integration: no-login mission rewards with grant report, arrival popup on entry launch, Home/popup wiring, navigation never pays, eligibility required, atomic claim/rollback, duplicate/restart/resume protection, stale callback rejection and preview/HTTPS guards passed. Live TikTok credentials were not used.");
         }
     }
 }
