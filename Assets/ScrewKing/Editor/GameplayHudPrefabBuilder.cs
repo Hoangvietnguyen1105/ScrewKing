@@ -179,7 +179,7 @@ namespace ScrewKing.Editor
                 var instance=Instance(names[i],boosters);instance.GetComponent<RectTransform>().anchoredPosition=new Vector2(new[]{88.2f,303.5f,534f}[i],0);
                 if(i==2)hud.HammerHighlight=instance.transform.Find("ArmedHighlight").gameObject;
             }
-            hud.MessagePanel=Rect("Message",content,58,1010,634,68).gameObject;ColorImage("Background",hud.MessagePanel.transform,new Rect(0,0,634,68),new Color(1,.98f,.84f,.96f));hud.MessageLabel=Label("MessageLabel",hud.MessagePanel.transform,"",10,0,614,68,19,new Color(.29f,.12f,.04f));hud.MessagePanel.SetActive(false);
+            hud.MessagePanel=Rect("Message",content,30,1052,690,80).gameObject;ColorImage("Background",hud.MessagePanel.transform,new Rect(0,0,690,80),new Color(1,.98f,.84f,.96f));hud.MessageLabel=Label("MessageLabel",hud.MessagePanel.transform,"",10,0,670,80,28,new Color(.29f,.12f,.04f));hud.MessageLabel.fontStyle=FontStyle.Bold;hud.MessagePanel.SetActive(false);
             var transition=ColorImage("Transition",content,new Rect(0,0,750,1334),new Color(.12f,.07f,.03f));hud.Transition=transition.gameObject.AddComponent<CanvasGroup>();hud.Transition.alpha=0;hud.Transition.blocksRaycasts=false;transition.gameObject.SetActive(false);
         }
     }
