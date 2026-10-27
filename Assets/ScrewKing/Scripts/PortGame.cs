@@ -186,7 +186,7 @@ namespace ScrewKing
         public bool TryTake(NailState nail)
         {
             if(busy || !Model.Ready || nail.Removed)return false;
-            if(IsBlocked(nail)) { Say("This screw is covered by a board above.");Play("takeFail");shakes[nail.Id]=Time.time;return false; }
+            if(IsBlocked(nail)) { Play("takeFail");shakes[nail.Id]=Time.time;return false; }
             Vector3 start=nails[nail.Id].transform.position;
             int color=nail.Color;
             if(!Model.Take(nail))return false;
