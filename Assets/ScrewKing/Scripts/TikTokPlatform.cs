@@ -78,26 +78,15 @@ namespace ScrewKing
             }catch(Exception error){Debug.LogException(error);callback?.Invoke(false);}
             finally{requestInProgress=false;}
         }
-        public void ShowLevelComplete(Action callback)=>Interstitial("level_complete",callback).Forget();
-        float nextInLevelCheck;
-        // Called every frame while the player is free mid-level: once the interstitial cooldown has run out the ad is
-        // shown right away instead of waiting for the level to end. The frequency policy still decides; Blocked is silent.
-        public void TryInLevelInterstitial()
-        {
-            if(requestInProgress || Context==null || Time.unscaledTime<nextInLevelCheck)return;
-            nextInLevelCheck=Time.unscaledTime+1f;
-            // NotReady is tracked as a missed opportunity, so only ask once an ad is loaded.
-            if(!Context.Ads.IsReady(AdFormat.Interstitial))return;
-            Interstitial("in_level",null).Forget();
-        }
-        async UniTaskVoid Interstitial(string placement,Action callback)
+        public void ShowLevelComplete(Action callback)=>Interstitial(callback).Forget();
+        async UniTaskVoid Interstitial(Action callback)
         {
             if(requestInProgress)return;
 #if SK_DEBUG_CONSOLE
             if(ScrewKingDebugConsole.NoAds){callback?.Invoke();return;}
 #endif
             requestInProgress=true;
-            try{await Context.Ads.ShowInterstitialAsync(placement,CancellationToken.None);}
+            try{await Context.Ads.ShowInterstitialAsync("level_complete",CancellationToken.None);}
             catch(Exception error){Debug.LogException(error);}
             finally{requestInProgress=false;callback?.Invoke();}
         }

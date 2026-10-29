@@ -158,8 +158,6 @@ namespace ScrewKing
                 foreach(var pose in poses.boards){var actor=boards.FirstOrDefault(b=>b&&b.Key==pose.key);if(actor){actor.transform.position=GameplayLayout.PhysicsToView(new Vector3((float)pose.x/100,(float)pose.y/100));actor.transform.rotation=Quaternion.Euler(0,0,(float)pose.angle);}}
             }
             hammer=Model!=null && Model.HammerArmed;
-            if(!menu && Model!=null && Model.Ready && !settings && !busy && !hammer && !sdkChangingLevel && !platform.Showing && !platform.Backgrounded
-                && !Input.GetMouseButton(0) && (!PlatformFeatures || !PlatformFeatures.ModalOpen))platform.TryInLevelInterstitial();
             if(menu || Model==null || settings || busy || platform.Showing || !Model.Ready)return;
             if(Input.GetMouseButtonDown(0))
             {
